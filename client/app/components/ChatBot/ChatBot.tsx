@@ -49,7 +49,7 @@ const ChatBot: React.FC = () => {
       const reply: Message = { content: data.message, role: "assistant" };
       setMessages((prevMessages) => [...prevMessages, reply]);
     } catch (error) {
-      console.error("Error:", error);
+      // ChatBot error occurred
     }
   };
 

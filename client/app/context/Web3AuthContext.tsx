@@ -13,6 +13,11 @@ interface Web3AuthContextType {
   logout: () => Promise<void>;
   isLoading: boolean;
   isWeb3AuthReady: boolean;
+  // Smart Account fields
+  scwAddress: string | null;
+  isUsingSCW: boolean;
+  isSponsored: boolean;
+  smartAccount: any | null;
 }
 
 const Web3AuthContext = createContext<Web3AuthContextType | undefined>(undefined);
@@ -34,13 +39,11 @@ let isInitialized = false;
 const initWeb3Auth = async (): Promise<Web3Auth> => {
   // Return existing instance if already initialized
   if (web3authInstance && isInitialized) {
-    console.log("Returning existing Web3Auth instance");
     return web3authInstance;
   }
 
   // Prevent multiple simultaneous initializations
   if (isInitializing) {
-    console.log("Web3Auth is already initializing, waiting...");
     // Wait for initialization to complete
     while (isInitializing) {
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -51,14 +54,10 @@ const initWeb3Auth = async (): Promise<Web3Auth> => {
   }
 
   isInitializing = true;
-  console.log("Starting Web3Auth initialization...");
 
   try {
     // Check environment variable
     const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
-    console.log("Web3Auth Client ID:", clientId);
-    console.log("Client ID type:", typeof clientId);
-    console.log("Client ID length:", clientId?.length);
     
     if (!clientId || clientId === "YOUR_CLIENT_ID") {
       throw new Error("Web3Auth Client ID is not set or is using placeholder value");
@@ -68,41 +67,26 @@ const initWeb3Auth = async (): Promise<Web3Auth> => {
     web3authInstance = new Web3Auth({
       clientId: clientId,
       web3AuthNetwork: "sapphire_devnet",
-      enableLogging: true,
+      enableLogging: false,
     });
 
-    console.log("Web3Auth instance created successfully");
-    
     // Initialize the Web3Auth instance properly
-    console.log("Initializing Web3Auth instance...");
     await web3authInstance.init();
-    console.log("Web3Auth instance initialized successfully");
     
     // Check if there's an initModal method available
     if (typeof (web3authInstance as any).initModal === 'function') {
-      console.log("Found initModal method, calling it...");
       await (web3authInstance as any).initModal();
-      console.log("initModal called successfully");
-    } else {
-      console.log("No initModal method found");
     }
-    
-    // Check for other modal-related methods
-    console.log("Available methods on web3auth instance:", Object.getOwnPropertyNames(Object.getPrototypeOf(web3authInstance)));
     
     // Try to manually trigger modal rendering if possible
     if (typeof (web3authInstance as any).showModal === 'function') {
-      console.log("Found showModal method, calling it...");
       (web3authInstance as any).showModal();
-      console.log("showModal called");
     }
     
     // Web3Auth Modal SDK is ready after instantiation
     isInitialized = true;
-    console.log("Web3Auth initialized successfully");
     return web3authInstance;
   } catch (error) {
-    console.error("Error initializing Web3Auth:", error);
     web3authInstance = null;
     isInitialized = false;
     throw error;
@@ -119,6 +103,11 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isLoading, setIsLoading] = useState(false);
   const [isWeb3AuthReady, setIsWeb3AuthReady] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  // Smart Account state
+  const [scwAddress, setScwAddress] = useState<string | null>(null);
+  const [isUsingSCW, setIsUsingSCW] = useState(false);
+  const [isSponsored, setIsSponsored] = useState(false);
+  const [smartAccount, setSmartAccount] = useState<any | null>(null);
   
   const { isConnected: wagmiConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -135,66 +124,45 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const initializeWeb3Auth = async () => {
       try {
-        console.log("Initializing Web3Auth on client side...");
         
         // Check if we're in a browser environment
         if (typeof window === 'undefined') {
-          console.log("Not in browser environment, skipping Web3Auth initialization");
           return;
         }
 
         // Check if Web3Auth is available
         if (typeof Web3Auth === 'undefined') {
-          console.error("Web3Auth is not available");
           return;
         }
 
-        // Initialize Web3Auth using singleton pattern
+                      // Initialize Web3Auth using singleton pattern with Smart Accounts enabled
         const web3AuthInstance = await initWeb3Auth();
-        
-        console.log("Web3Auth instance created, setting up event listeners...");
         
         // Set up event listeners before any operations
         web3AuthInstance.on("connected", (data) => {
-          console.log("Web3Auth connected:", data);
           setIsAuthenticated(true);
         });
 
         web3AuthInstance.on("connecting", () => {
-          console.log("Web3Auth connecting...");
         });
 
         web3AuthInstance.on("disconnected", () => {
-          console.log("Web3Auth disconnected");
           setIsAuthenticated(false);
           setUserInfo(null);
           setAddress(null);
         });
 
         web3AuthInstance.on("errored", (error) => {
-          console.error("Web3Auth error:", error);
+          // Silent error handling - errors will be caught by try/catch blocks
         });
 
         // Store the instance
         setWeb3auth(web3AuthInstance);
-        console.log("Web3Auth instance stored in context");
-        
-        // Wait for modal to be fully initialized
-        console.log("Waiting for modal to be ready...");
-        
-        // Add a longer delay to ensure modal DOM elements are fully ready
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Check if modal elements are present in DOM
-        const modalElements = document.querySelectorAll('[data-web3auth-modal]');
-        console.log("Modal elements found:", modalElements.length);
         
         // Web3Auth Modal SDK is ready after instantiation
         setIsWeb3AuthReady(true);
-        console.log("Web3Auth marked as ready");
         
       } catch (error) {
-        console.error("Failed to initialize Web3Auth:", error);
         setIsWeb3AuthReady(false);
         toast.error("Failed to initialize Web3Auth. Please check your configuration.");
       }
@@ -210,6 +178,13 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [isWeb3AuthReady, web3auth]);
 
+  // Smart account is now initialized explicitly after login, not automatically
+  // useEffect(() => {
+  //   if (isAuthenticated && web3auth?.provider && web3auth?.accountAbstractionProvider) {
+  //     initializeSmartAccount();
+  //   }
+  // }, [isAuthenticated, web3auth]);
+
   // Expose Web3Auth state to window for other components to access
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -218,37 +193,80 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         userInfo,
         address,
         isWeb3AuthReady,
+        scwAddress,
+        isUsingSCW,
+        isSponsored,
       };
-      
-      // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('web3auth-state-changed', {
         detail: {
           isAuthenticated,
           userInfo,
           address,
           isWeb3AuthReady,
+          scwAddress,
+          isUsingSCW,
+          isSponsored,
         }
       }));
     }
-  }, [isAuthenticated, userInfo, address, isWeb3AuthReady]);
+  }, [isAuthenticated, userInfo, address, isWeb3AuthReady, scwAddress, isUsingSCW, isSponsored]);
 
   const checkAuthStatus = async () => {
     if (!web3auth) return;
-    
     try {
-      const connected = web3auth.connected;
-      if (connected && web3auth.provider) {
+      if (web3auth.connected && web3auth.provider) {
         const user = await web3auth.getUserInfo();
-        const accounts = await web3auth.provider.request({
-          method: "eth_accounts",
-        }) as string[];
-        
+        const accounts = await web3auth.provider.request({ method: "eth_accounts" }) as string[];
         setUserInfo(user);
         setAddress(accounts?.[0] || null);
         setIsAuthenticated(true);
+        
+        // Restore smart account if Account Abstraction is available
+        if (web3auth.accountAbstractionProvider) {
+          setTimeout(() => initializeSmartAccount(), 500);
+        }
+      } else {
+        // Ensure clean state if not connected
+        setIsAuthenticated(false);
+        setUserInfo(null);
+        setAddress(null);
+        setScwAddress(null);
+        setIsUsingSCW(false);
+        setSmartAccount(null);
       }
     } catch (error) {
-      console.error("Error checking auth status:", error);
+      // Reset state on error
+      setIsAuthenticated(false);
+      setUserInfo(null);
+      setAddress(null);
+      setScwAddress(null);
+      setIsUsingSCW(false);
+      setSmartAccount(null);
+    }
+  };
+
+  const initializeSmartAccount = async () => {
+    if (!web3auth?.provider || !web3auth?.accountAbstractionProvider) {
+      return;
+    }
+    
+    try {
+      // Import smart account utilities dynamically
+      const { getSmartAccount, getSmartAccountAddress } = await import("@/app/helpers/smartAccountV2");
+      
+      // Pass the existing web3auth instance to avoid creating a new one
+      const smartAccountInstance = await getSmartAccount(web3auth);
+      const scwAddr = await getSmartAccountAddress(web3auth);
+      
+      setSmartAccount(smartAccountInstance);
+      setScwAddress(scwAddr);
+      setIsUsingSCW(true);
+      setIsSponsored(false);
+      
+    } catch (error) {
+      setIsUsingSCW(false);
+      setSmartAccount(null);
+      setScwAddress(null);
     }
   };
 
@@ -257,38 +275,21 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       toast.error("Web3Auth is not available on server side.");
       return;
     }
-
     if (!isWeb3AuthReady || !web3auth) {
       toast.error("Web3Auth is not ready yet. Please try again.");
       return;
     }
-
     setIsLoading(true);
     try {
-      console.log("Attempting to connect with Web3Auth...");
-      console.log("Web3Auth connected state:", web3auth.connected);
-      
-      // Try to connect with retry mechanism
       let provider = null;
       let retryCount = 0;
       const maxRetries = 3;
-      
       while (!provider && retryCount < maxRetries) {
         try {
-          console.log(`Login attempt ${retryCount + 1}/${maxRetries}`);
-          
-          // Use the official connect method
           provider = await web3auth.connect();
-          
-          if (provider) {
-            console.log("Successfully connected to Web3Auth");
-            break;
-          }
+          if (provider) break;
         } catch (connectError: any) {
-          console.error(`Login attempt ${retryCount + 1} failed:`, connectError);
-          
           if (connectError.message?.includes("Wallet is not ready yet")) {
-            console.log("Modal not ready, waiting and retrying...");
             await new Promise(resolve => setTimeout(resolve, 1000));
             retryCount++;
             continue;
@@ -297,28 +298,22 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
         }
       }
-      
-      if (!provider) {
-        throw new Error("Failed to connect after multiple attempts");
-      }
-      
-      // Get user info after successful connection
+      if (!provider) throw new Error("Failed to connect after multiple attempts");
       const user = await web3auth.getUserInfo();
-      const accounts = await provider.request({
-        method: "eth_accounts",
-      }) as string[];
-      
+      const accounts = await provider.request({ method: "eth_accounts" }) as string[];
       setUserInfo(user);
       setAddress(accounts[0] || null);
       setIsAuthenticated(true);
       
-      // Note: Wagmi integration will be handled separately
-      // For now, the Web3Auth login is successful
-      console.log("Web3Auth login successful, address:", accounts[0]);
+      // Login successful - initialize smart account if available
       
       toast.success("Successfully logged in!");
-    } catch (error) {
-      console.error("Login error:", error);
+      
+      // Initialize smart account after successful login
+      if (web3auth.accountAbstractionProvider) {
+        setTimeout(() => initializeSmartAccount(), 500);
+      }
+    } catch {
       toast.error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -330,17 +325,15 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       toast.error("Web3Auth is not ready yet. Please try again.");
       return;
     }
-
     setIsLoading(true);
     try {
       await web3auth.logout();
-      disconnect(); // Disconnect from Wagmi as well
+      disconnect();
       setUserInfo(null);
       setAddress(null);
       setIsAuthenticated(false);
       toast.success("Successfully logged out!");
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
       toast.error("Logout failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -355,6 +348,11 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     logout: handleLogout,
     isLoading,
     isWeb3AuthReady,
+    // Smart Account fields
+    scwAddress,
+    isUsingSCW,
+    isSponsored,
+    smartAccount,
   };
 
   return (

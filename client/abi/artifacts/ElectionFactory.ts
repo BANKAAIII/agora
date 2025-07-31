@@ -12,6 +12,16 @@ export const ElectionFactory = [
   },
   {
     inputs: [],
+    name: "CreatorSponsorshipLimitExceeded",
+    type: "error"
+  },
+  {
+    inputs: [],
+    name: "ElectionNotSponsored",
+    type: "error"
+  },
+  {
+    inputs: [],
     name: "InvalidCandidatesLength",
     type: "error"
   },
@@ -28,6 +38,11 @@ export const ElectionFactory = [
   },
   {
     inputs: [],
+    name: "InvalidSponsorshipAmount",
+    type: "error"
+  },
+  {
+    inputs: [],
     name: "NotWhitelistedSender",
     type: "error"
   },
@@ -40,6 +55,100 @@ export const ElectionFactory = [
     inputs: [],
     name: "OwnerRestricted",
     type: "error"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "reason",
+        type: "string"
+      }
+    ],
+    name: "CreatorBlacklisted",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalDeposited",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalWithdrawn",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "activeSponsorships",
+        type: "uint256"
+      }
+    ],
+    name: "CreatorSponsorshipUpdated",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address"
+      }
+    ],
+    name: "CreatorUnblacklisted",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address"
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "election",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "sponsorshipAmount",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalCreatorSponsorship",
+        type: "uint256"
+      }
+    ],
+    name: "ElectionCreatedWithSponsorship",
+    type: "event"
   },
   {
     anonymous: false,
@@ -67,73 +176,61 @@ export const ElectionFactory = [
     type: "event"
   },
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "uint64",
-        name: "_sourceChainSelector",
-        type: "uint64"
+        indexed: false,
+        internalType: "uint256",
+        name: "oldLimit",
+        type: "uint256"
       },
       {
-        internalType: "address",
-        name: "_contractAddress",
-        type: "address"
+        indexed: false,
+        internalType: "uint256",
+        name: "newLimit",
+        type: "uint256"
       }
     ],
-    name: "addWhitelistedContract",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "SponsorshipLimitUpdated",
+    type: "event"
+  },
+  {
+    inputs: [],
+    name: "MAX_ACTIVE_ELECTIONS_PER_CREATOR",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
     type: "function"
   },
   {
-    inputs: [
+    inputs: [],
+    name: "MAX_SPONSORSHIP_PER_CREATOR",
+    outputs: [
       {
-        components: [
-          {
-            internalType: "bytes32",
-            name: "messageId",
-            type: "bytes32"
-          },
-          {
-            internalType: "uint64",
-            name: "sourceChainSelector",
-            type: "uint64"
-          },
-          {
-            internalType: "bytes",
-            name: "sender",
-            type: "bytes"
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes"
-          },
-          {
-            components: [
-              {
-                internalType: "address",
-                name: "token",
-                type: "address"
-              },
-              {
-                internalType: "uint256",
-                name: "amount",
-                type: "uint256"
-              }
-            ],
-            internalType: "struct Client.EVMTokenAmount[]",
-            name: "destTokenAmounts",
-            type: "tuple[]"
-          }
-        ],
-        internalType: "struct Client.Any2EVMMessage",
-        name: "message",
-        type: "tuple"
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
       }
     ],
-    name: "ccipReceive",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "MIN_SPONSORSHIP_AMOUNT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
     type: "function"
   },
   {
@@ -206,40 +303,68 @@ export const ElectionFactory = [
   {
     inputs: [
       {
+        components: [
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256"
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string"
+          },
+          {
+            internalType: "string",
+            name: "description",
+            type: "string"
+          }
+        ],
+        internalType: "struct Election.ElectionInfo",
+        name: "_electionInfo",
+        type: "tuple"
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "candidateID",
+            type: "uint256"
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string"
+          },
+          {
+            internalType: "string",
+            name: "description",
+            type: "string"
+          }
+        ],
+        internalType: "struct Election.Candidate[]",
+        name: "_candidates",
+        type: "tuple[]"
+      },
+      {
         internalType: "uint256",
-        name: "_electionId",
+        name: "_ballotType",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "_resultType",
         type: "uint256"
       }
     ],
-    name: "deleteElection",
+    name: "createElectionWithSponsorship",
     outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "electionCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "factoryOwner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address"
-      }
-    ],
-    stateMutability: "view",
+    stateMutability: "payable",
     type: "function"
   },
   {
@@ -254,69 +379,5 @@ export const ElectionFactory = [
     ],
     stateMutability: "view",
     type: "function"
-  },
-  {
-    inputs: [],
-    name: "getRouter",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    name: "openBasedElections",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "_sourceChainSelector",
-        type: "uint64"
-      }
-    ],
-    name: "removeWhitelistedContract",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "interfaceId",
-        type: "bytes4"
-      }
-    ],
-    name: "supportsInterface",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool"
-      }
-    ],
-    stateMutability: "pure",
-    type: "function"
   }
-]
+] as const;

@@ -34,7 +34,7 @@ const CrossChain = ({
       });
       setbuttonValue(true);
     } catch (error) {
-      console.log("Error : ", error);
+      // CrossChain error occurred
     }
   };
   useEffect(() => {

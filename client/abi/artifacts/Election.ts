@@ -409,4 +409,67 @@ export const Election = [
     stateMutability: "view",
     type: "function",
   },
-];
+  {
+    inputs: [],
+    name: "addSponsorship",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getSponsorshipStatus",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "isSponsored",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "remainingBalance",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "totalVotesSponsored",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "averageGasPerVote",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "totalDeposited",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "sponsor",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "emergencyWithdrawalEnabled",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawSponsorship",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const;

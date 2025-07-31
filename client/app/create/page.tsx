@@ -13,6 +13,7 @@ import { sepolia } from "viem/chains";
 import { ArrowPathIcon , PlusIcon, TrashIcon} from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import ElectionInfoPopup from "../components/Modal/ElectionInfoPopup";
+import { parseEther } from "viem";
 
 const CreatePage: React.FC = () => {
   const router = useRouter();
@@ -20,9 +21,13 @@ const CreatePage: React.FC = () => {
   const { switchChain } = useSwitchChain();
   const { chain } = useAccount();
   const { writeContractAsync } = useWriteContract();
-  const [startTime, setStartTime] = useState<Date | null>(new Date());
-  const [endTime, setEndTime] = useState<Date | null>(new Date());
+  const [startTime, setStartTime] = useState<Date | null>(new Date(Date.now() + 10 * 60 * 1000)); // 10 minutes from now
+  const [endTime, setEndTime] = useState<Date | null>(new Date(Date.now() + 24 * 60 * 60 * 1000)); // 24 hours from now
   const [candidates,setCandidates] = useState<Candidate[]>([])
+  const [isSponsored, setIsSponsored] = useState(false);
+  const [sponsorshipAmount, setSponsorshipAmount] = useState("0.01");
+  const [estimatedGasCost, setEstimatedGasCost] = useState("0.005");
+  
   const changeChain = () => {
     switchChain({ chainId: sepolia.id });
   }
@@ -68,9 +73,20 @@ const CreatePage: React.FC = () => {
 
     const start = BigInt(Math.floor(startTime.getTime() / 1000));
     const end = BigInt(Math.floor(endTime.getTime() / 1000));
+    
+    // Validate timestamps
 
     if (start >= end) {
       toast.error("Invalid timing. End time must be after start time.");
+      return;
+    }
+    
+    // Check if timestamps are reasonable (not too far in future)
+    const now = Math.floor(Date.now() / 1000);
+    const oneYearFromNow = now + (365 * 24 * 60 * 60); // 1 year in seconds
+    
+    if (Number(start) > oneYearFromNow) {
+      toast.error("Start time is too far in the future (max 1 year)");
       return;
     }
     if(candidates.length>0  && candidates.some(candidate=>!candidate.name || !candidate.description)){
@@ -79,21 +95,42 @@ const CreatePage: React.FC = () => {
     }
   // passed candidates to the create election function 
     try {
-      await writeContractAsync({
-        address: ELECTION_FACTORY_ADDRESS,
-        abi: ElectionFactory,
-        functionName: "createElection",
-        args: [
-          { startTime: start, endTime: end, name, description }, // ElectionInfo object
-          candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })), 
-          ballotType,
-          ballotType,
-        ],
-      });
+      const value = isSponsored ? parseEther(sponsorshipAmount) : BigInt(0);
+      
+      // Use different functions based on sponsorship
+      if (isSponsored && parseFloat(sponsorshipAmount) > 0) {
+        // Use createElectionWithSponsorship if available
+        await writeContractAsync({
+          address: ELECTION_FACTORY_ADDRESS,
+          abi: ElectionFactory,
+          functionName: "createElectionWithSponsorship",
+          args: [
+            { startTime: start, endTime: end, name, description }, // ElectionInfo object
+            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })), 
+            ballotType,
+            ballotType,
+          ],
+          value: value, // Send ETH for sponsorship
+        });
+      } else {
+        // Use regular createElection for non-sponsored elections
+        await writeContractAsync({
+          address: ELECTION_FACTORY_ADDRESS,
+          abi: ElectionFactory,
+          functionName: "createElection",
+          args: [
+            { startTime: start, endTime: end, name, description }, // ElectionInfo object
+            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })), 
+            ballotType,
+            ballotType,
+          ],
+          // No value for non-sponsored elections
+        });
+      }
       toast.success("Election created successfully!");
       router.push("/");
     } catch (error) {
-      console.error("Error creating election:", error);
+              // Election creation failed
       toast.error(ErrorMessage(error));
     }
   };
@@ -222,6 +259,59 @@ const CreatePage: React.FC = () => {
               onChange={(value) => setEndTime(value)}
               label="End Date"
             />
+          </div>
+
+          {/* Sponsorship Section */}
+          <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="sponsorElection"
+                checked={isSponsored}
+                onChange={(e) => setIsSponsored(e.target.checked)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label htmlFor="sponsorElection" className="text-sm font-medium text-gray-700">
+                Sponsor this election (I'll pay gas fees for voters)
+              </label>
+            </div>
+            
+            {isSponsored && (
+              <div className="space-y-3 pl-7">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sponsorship Amount (ETH)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    min="0.001"
+                    value={sponsorshipAmount}
+                    onChange={(e) => setSponsorshipAmount(e.target.value)}
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="0.01"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Estimated gas cost per vote: ~{estimatedGasCost} ETH
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-blue-700">
+                        <strong>Voters won't pay gas fees!</strong> You'll cover all transaction costs for this election.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <motion.button
             type="submit"

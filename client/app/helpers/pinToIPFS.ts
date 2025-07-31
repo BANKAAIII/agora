@@ -16,10 +16,10 @@ export const pinJSONFile = async (body: any) => {
       options
     );
     const data = await response.json();
-    console.log(data);
+    // IPFS upload successful
     return data;
   } catch (err) {
-    console.error(err);
+    // IPFS upload error
     throw err; // rethrow the error to be handled by the caller
   }
 };
@@ -33,7 +33,7 @@ export const unpinJSONFile = async (CID: String) => {
   try {
     await fetch(`https://api.pinata.cloud/pinning/unpin/${CID}`, options);
   } catch (err) {
-    console.error(err);
+    // Pin to IPFS error
     throw err; // rethrow the error to be handled by the caller
   }
 };

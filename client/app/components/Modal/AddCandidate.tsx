@@ -51,7 +51,7 @@ const AddCandidate = ({
       });
       toast.success(`${name} Added to Election`);
     } catch (error) {
-      console.log("Error ", error);
+      // Error occurred
       toast.error(ErrorMessage(error));
     }
     setopenModal(false);

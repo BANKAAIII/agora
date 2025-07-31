@@ -5,7 +5,7 @@ import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 // Web3Auth configuration
 export const web3AuthConfig = {
   clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "YOUR_CLIENT_ID", // Get from https://dashboard.web3auth.io
-  web3AuthNetwork: "testnet" as const,
+  web3AuthNetwork: "sapphire_devnet" as const,
   enableLogging: true,
 };
 
@@ -32,10 +32,10 @@ export const initWeb3Auth = async (): Promise<Web3Auth> => {
       enableLogging: web3AuthConfig.enableLogging,
     });
     await web3authInstance.initModal(); // <-- CRITICAL: ensure modal is initialized
-    console.log("Web3Auth initialized successfully");
+    // Web3Auth initialized successfully
     return web3authInstance;
   } catch (error) {
-    console.error("Error initializing Web3Auth:", error);
+    // Error initializing Web3Auth
     web3authInstance = null;
     throw error;
   } finally {
