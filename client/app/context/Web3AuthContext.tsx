@@ -1,6 +1,9 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Web3Auth } from "@web3auth/modal";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+// OpenLogin adapter not needed with pure v10 Wallet Discovery
+// Using pure v10 Wallet Discovery; no explicit external adapters
 import { IProvider } from "@web3auth/base";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import toast from "react-hot-toast";
@@ -34,11 +37,18 @@ export const useWeb3Auth = () => {
 let web3authInstance: Web3Auth | null = null;
 let isInitializing = false;
 let isInitialized = false;
+let didInitModal = false;
 
 // Initialize Web3Auth instance (singleton)
 const initWeb3Auth = async (): Promise<Web3Auth> => {
   // Return existing instance if already initialized
   if (web3authInstance && isInitialized) {
+    if (typeof window !== 'undefined') {
+      console.debug('[Web3Auth] Reusing existing initialized instance', {
+        connected: (web3authInstance as any)?.connected,
+        hasProvider: !!(web3authInstance as any)?.provider,
+      });
+    }
     return web3authInstance;
   }
 
@@ -54,39 +64,126 @@ const initWeb3Auth = async (): Promise<Web3Auth> => {
   }
 
   isInitializing = true;
+  if (typeof window !== 'undefined') {
+    (window as any).__WEB3AUTH_PHASE__ = 'initializing';
+    console.debug('[Web3Auth] Starting initialization');
+  }
 
   try {
     // Check environment variable
     const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+    console.debug('[Web3Auth] Env check', {
+      hasClientId: !!clientId,
+      clientIdPreview: clientId ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}` : null,
+      hasSepoliaRpc: !!process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL,
+    });
+    console.debug('[Web3Auth] Import check', {
+      Web3AuthType: typeof Web3Auth,
+      hasPrototypeInitModal: typeof (Web3Auth as any)?.prototype?.initModal,
+      hasPrototypeInit: typeof (Web3Auth as any)?.prototype?.init,
+      hasPrototypeConnect: typeof (Web3Auth as any)?.prototype?.connect,
+    });
     
     if (!clientId || clientId === "YOUR_CLIENT_ID") {
+      console.error('[Web3Auth] Missing NEXT_PUBLIC_WEB3AUTH_CLIENT_ID');
       throw new Error("Web3Auth Client ID is not set or is using placeholder value");
     }
 
-    // Create new instance with different configuration
+    // Build private key provider with chain config (required by latest SDK)
+    const chainConfig = {
+      chainNamespace: "eip155",
+      chainId: "0xaa36a7",
+      rpcTarget: process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL || "https://ethereum-sepolia-rpc.publicnode.com",
+      displayName: "Ethereum Sepolia",
+      blockExplorerUrl: "https://sepolia.etherscan.io",
+      ticker: "ETH",
+      tickerName: "Sepolia Ether",
+    } as const;
+    console.debug('[Web3Auth] chainConfig', chainConfig);
+
+    // For Modal SDK v10, pass chainConfig directly to Web3Auth; do not require explicit privateKeyProvider
+
+    // Create new instance with required privateKeyProvider
     web3authInstance = new Web3Auth({
       clientId: clientId,
       web3AuthNetwork: "sapphire_devnet",
       enableLogging: false,
+      chainConfig,
+    } as any);
+    const proto = Object.getPrototypeOf(web3authInstance as any);
+    console.debug('[Web3Auth] Web3Auth instance created', {
+      web3AuthNetwork: "sapphire_devnet",
+      enableLogging: false,
+      hasInitModal: typeof (web3authInstance as any).initModal === 'function',
+      hasInit: typeof (web3authInstance as any).init === 'function',
+      hasConnect: typeof (web3authInstance as any).connect === 'function',
+      ctorName: (web3authInstance as any)?.constructor?.name,
     });
+    try {
+      console.debug('[Web3Auth] Instance own keys', Object.keys(web3authInstance as any));
+      console.debug('[Web3Auth] Instance prototype methods', Object.getOwnPropertyNames(proto));
+    } catch {}
 
-    // Initialize the Web3Auth instance properly
-    await web3authInstance.init();
-    
-    // Check if there's an initModal method available
+    // No explicit OpenLogin adapter; use dashboard connections + v10 discovery
+
+    // No explicit MetaMask/Coinbase/WalletConnect adapters; v10 discovery handles this
+
+    // Initialize the modal (Modal SDK should use initModal, not init)
     if (typeof (web3authInstance as any).initModal === 'function') {
-      await (web3authInstance as any).initModal();
-    }
-    
-    // Try to manually trigger modal rendering if possible
-    if (typeof (web3authInstance as any).showModal === 'function') {
-      (web3authInstance as any).showModal();
+      try {
+        console.debug('[Web3Auth] initModal() starting');
+        await (web3authInstance as any).initModal();
+        console.debug('[Web3Auth] initModal() completed');
+        didInitModal = true;
+      } catch (e) {
+        // Ignore already-initialized errors in dev hot reload; rethrow others
+        const msg = (e as any)?.message || '';
+        if (msg.includes('Adapter is already initialized')) {
+          console.warn('[Web3Auth] initModal() already initialized - continuing');
+          didInitModal = true;
+        } else {
+          console.error('[Web3Auth] initModal() error - aborting initialization', e);
+          throw e;
+        }
+      }
+    } else if (typeof (web3authInstance as any).init === 'function') {
+      // Fallback for builds exposing `init` instead of `initModal`
+      console.warn('[Web3Auth] initModal() missing, using init() fallback');
+      try {
+        console.debug('[Web3Auth] init() starting');
+        await (web3authInstance as any).init();
+        console.debug('[Web3Auth] init() completed');
+        didInitModal = true;
+      } catch (e) {
+        console.error('[Web3Auth] init() error - aborting initialization', e);
+        throw e;
+      }
+    } else {
+      console.error('[Web3Auth] Neither initModal() nor init() found on instance. Diagnostics:', {
+        hasInit: typeof (web3authInstance as any).init,
+        hasConnect: typeof (web3authInstance as any).connect,
+        ctorName: (web3authInstance as any)?.constructor?.name,
+      });
+      try {
+        const proto2 = Object.getPrototypeOf(web3authInstance as any);
+        console.debug('[Web3Auth] Prototype methods (fallback log)', Object.getOwnPropertyNames(proto2));
+        console.debug('[Web3Auth] Own keys (fallback log)', Object.keys(web3authInstance as any));
+      } catch {}
     }
     
     // Web3Auth Modal SDK is ready after instantiation
     isInitialized = true;
+    if (typeof window !== 'undefined') {
+      (window as any).__WEB3AUTH_PHASE__ = 'ready';
+      (window as any).__WEB3AUTH_INSTANCE__ = web3authInstance;
+      console.debug('[Web3Auth] Initialization complete');
+    }
     return web3authInstance;
   } catch (error) {
+    if (typeof window !== 'undefined') {
+      (window as any).__WEB3AUTH_PHASE__ = 'error';
+      console.error('[Web3Auth] Initialization error', error);
+    }
     web3authInstance = null;
     isInitialized = false;
     throw error;
@@ -116,6 +213,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Ensure we're on the client side
   useEffect(() => {
     setIsClient(true);
+    console.debug('[Web3Auth] useEffect setIsClient(true)');
   }, []);
 
   // Initialize Web3Auth only on client side
@@ -127,44 +225,57 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         
         // Check if we're in a browser environment
         if (typeof window === 'undefined') {
+          console.debug('[Web3Auth] Skipping init: not in browser');
           return;
         }
 
         // Check if Web3Auth is available
         if (typeof Web3Auth === 'undefined') {
+          console.debug('[Web3Auth] Skipping init: Web3Auth undefined');
           return;
         }
 
                       // Initialize Web3Auth using singleton pattern with Smart Accounts enabled
+        console.debug('[Web3Auth] Calling initWeb3Auth() ...');
         const web3AuthInstance = await initWeb3Auth();
+        console.debug('[Web3Auth] initWeb3Auth() resolved', {
+          connected: (web3AuthInstance as any)?.connected,
+          hasProvider: !!(web3AuthInstance as any)?.provider,
+        });
         
         // Set up event listeners before any operations
         web3AuthInstance.on("connected", (data) => {
+          console.debug('[Web3Auth] Event: connected', data);
           setIsAuthenticated(true);
         });
 
         web3AuthInstance.on("connecting", () => {
+          console.debug('[Web3Auth] Event: connecting');
         });
 
         web3AuthInstance.on("disconnected", () => {
+          console.debug('[Web3Auth] Event: disconnected');
           setIsAuthenticated(false);
           setUserInfo(null);
           setAddress(null);
         });
 
         web3AuthInstance.on("errored", (error) => {
+          console.error('[Web3Auth] Event: errored', error);
           // Silent error handling - errors will be caught by try/catch blocks
         });
 
         // Store the instance
         setWeb3auth(web3AuthInstance);
         
-        // Web3Auth Modal SDK is ready after instantiation
-        setIsWeb3AuthReady(true);
+        // Web3Auth Modal SDK is ready after modal has been initialized
+        setIsWeb3AuthReady(didInitModal);
+        console.debug('[Web3Auth] isWeb3AuthReady =', didInitModal);
         
       } catch (error) {
         setIsWeb3AuthReady(false);
         toast.error("Failed to initialize Web3Auth. Please check your configuration.");
+        console.error('[Web3Auth] Failed to initialize', error);
       }
     };
 
@@ -174,6 +285,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Check authentication status after Web3Auth is ready
   useEffect(() => {
     if (isWeb3AuthReady && web3auth) {
+      console.debug('[Web3Auth] checkAuthStatus() triggered');
       checkAuthStatus();
     }
   }, [isWeb3AuthReady, web3auth]);
@@ -215,17 +327,22 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (!web3auth) return;
     try {
       if (web3auth.connected && web3auth.provider) {
+        console.debug('[Web3Auth] checkAuthStatus: connected, fetching user & accounts');
         const user = await web3auth.getUserInfo();
+        console.debug('[Web3Auth] userInfo', user);
         const accounts = await web3auth.provider.request({ method: "eth_accounts" }) as string[];
+        console.debug('[Web3Auth] accounts', accounts);
         setUserInfo(user);
         setAddress(accounts?.[0] || null);
         setIsAuthenticated(true);
         
         // Restore smart account if Account Abstraction is available
-        if (web3auth.accountAbstractionProvider) {
+        if ((web3auth as any).accountAbstractionProvider) {
+          console.debug('[SmartAccount] AA provider detected, scheduling initialization');
           setTimeout(() => initializeSmartAccount(), 500);
         }
       } else {
+        console.debug('[Web3Auth] checkAuthStatus: not connected');
         // Ensure clean state if not connected
         setIsAuthenticated(false);
         setUserInfo(null);
@@ -235,6 +352,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setSmartAccount(null);
       }
     } catch (error) {
+      console.error('[Web3Auth] checkAuthStatus error', error);
       // Reset state on error
       setIsAuthenticated(false);
       setUserInfo(null);
@@ -246,7 +364,11 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const initializeSmartAccount = async () => {
-    if (!web3auth?.provider || !web3auth?.accountAbstractionProvider) {
+    if (!web3auth?.provider || !(web3auth as any)?.accountAbstractionProvider) {
+      console.warn('[SmartAccount] initializeSmartAccount called without AA provider or provider', {
+        hasProvider: !!web3auth?.provider,
+        hasAA: !!(web3auth as any)?.accountAbstractionProvider,
+      });
       return;
     }
     
@@ -255,15 +377,19 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const { getSmartAccount, getSmartAccountAddress } = await import("@/app/helpers/smartAccountV2");
       
       // Pass the existing web3auth instance to avoid creating a new one
-      const smartAccountInstance = await getSmartAccount(web3auth);
-      const scwAddr = await getSmartAccountAddress(web3auth);
+      console.debug('[SmartAccount] getSmartAccount() starting');
+      const smartAccountInstance = await getSmartAccount(web3auth as any);
+      console.debug('[SmartAccount] getSmartAccount() resolved');
+      const scwAddr = await getSmartAccountAddress(web3auth as any);
       
       setSmartAccount(smartAccountInstance);
       setScwAddress(scwAddr);
       setIsUsingSCW(true);
       setIsSponsored(false);
+      console.debug('[SmartAccount] Initialized', { scwAddr });
       
     } catch (error) {
+      console.error('[SmartAccount] Initialization error', error);
       setIsUsingSCW(false);
       setSmartAccount(null);
       setScwAddress(null);
@@ -281,26 +407,17 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     setIsLoading(true);
     try {
-      let provider = null;
-      let retryCount = 0;
-      const maxRetries = 3;
-      while (!provider && retryCount < maxRetries) {
-        try {
-          provider = await web3auth.connect();
-          if (provider) break;
-        } catch (connectError: any) {
-          if (connectError.message?.includes("Wallet is not ready yet")) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            retryCount++;
-            continue;
-          } else {
-            throw connectError;
-          }
-        }
+      console.debug('[Web3Auth] login() starting');
+      // Single connect call (v10 opens the modal). If user cancels, this throws.
+      const provider = await web3auth.connect();
+      console.debug('[Web3Auth] connect() resolved', { hasProvider: !!provider });
+      if (!provider) {
+        throw new Error('Web3Auth connect() returned null provider');
       }
-      if (!provider) throw new Error("Failed to connect after multiple attempts");
       const user = await web3auth.getUserInfo();
+      console.debug('[Web3Auth] getUserInfo() resolved', user);
       const accounts = await provider.request({ method: "eth_accounts" }) as string[];
+      console.debug('[Web3Auth] eth_accounts', accounts);
       setUserInfo(user);
       setAddress(accounts[0] || null);
       setIsAuthenticated(true);
@@ -310,13 +427,24 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       toast.success("Successfully logged in!");
       
       // Initialize smart account after successful login
-      if (web3auth.accountAbstractionProvider) {
+      if ((web3auth as any).accountAbstractionProvider) {
+        console.debug('[SmartAccount] AA provider present post-login, scheduling init');
         setTimeout(() => initializeSmartAccount(), 500);
       }
-    } catch {
+    } catch (error) {
       toast.error("Login failed. Please try again.");
+      console.error('[Web3Auth] login() error', error);
+      try {
+        console.error('[Web3Auth] login() error.details', {
+          message: (error as any)?.message,
+          code: (error as any)?.code,
+          name: (error as any)?.name,
+          stack: (error as any)?.stack,
+        });
+      } catch {}
     } finally {
       setIsLoading(false);
+      console.debug('[Web3Auth] login() finished');
     }
   };
 
@@ -335,6 +463,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       toast.success("Successfully logged out!");
     } catch {
       toast.error("Logout failed. Please try again.");
+      console.error('[Web3Auth] logout() error');
     } finally {
       setIsLoading(false);
     }

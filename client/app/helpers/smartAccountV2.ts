@@ -1,5 +1,4 @@
 "use client";
-import { Web3Auth } from "@web3auth/modal";
 import { createWalletClient, custom, parseEther } from "viem";
 
 // Configuration for supported chains
@@ -34,46 +33,14 @@ export async function initSmartAccount(existingWeb3Auth?: any): Promise<any> {
   initPromise = (async () => {
     try {
       let web3auth = existingWeb3Auth;
-      
-      // If no existing Web3Auth instance provided, create a new one (fallback)
-      if (!web3auth) {
-        // Creating new Web3Auth instance
-        // Import Web3Auth dynamically to avoid SSR issues
-        const { Web3Auth } = await import("@web3auth/modal");
-        
-        web3auth = new Web3Auth({
-          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "YOUR_CLIENT_ID",
-          web3AuthNetwork: "sapphire_devnet",
-          enableLogging: false,
-          accountAbstractionConfig: {
-            smartAccountType: "metamask",
-            chains: [
-              {
-                chainId: "0xaa36a7", // Sepolia
-                bundlerConfig: {
-                  url: "https://api.pimlico.io/v2/11155111/rpc?apikey=pim_MiaYuXkQNsWzVGLeRJdyUG",
-                },
-                paymasterConfig: {
-                  url: "https://api.pimlico.io/v2/11155111/rpc?apikey=pim_MiaYuXkQNsWzVGLeRJdyUG",
-                },
-              },
-            ],
-          },
-          // Override the chain config to ensure Sepolia RPC consistency
-          chainConfig: {
-            chainNamespace: "eip155",
-            chainId: "0xaa36a7", // Sepolia
-            rpcTarget: "https://ethereum-sepolia-rpc.publicnode.com",
-            displayName: "Ethereum Sepolia",
-            blockExplorerUrl: "https://sepolia.etherscan.io",
-            ticker: "ETH",
-            tickerName: "Sepolia Ether",
-          },
-        } as any);
 
-        await web3auth.init();
-      } else {
-        // Using existing Web3Auth instance from context
+      // Reuse singleton created by Web3AuthContext; do not create/init here
+      if (!web3auth && typeof window !== "undefined") {
+        web3auth = (window as any).__WEB3AUTH_INSTANCE__;
+      }
+
+      if (!web3auth) {
+        throw new Error("Web3Auth not initialized. Initialize via Web3AuthContext.initModal() first.");
       }
 
       // Check if user is already connected

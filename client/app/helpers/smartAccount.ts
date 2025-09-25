@@ -38,16 +38,15 @@ export async function initSmartAccount(): Promise<any> {
 
   initPromise = (async () => {
     try {
-      // Import Web3Auth dynamically to avoid SSR issues
-      const { Web3Auth } = await import("@web3auth/modal");
-      
-      const web3auth = new Web3Auth({
-        clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "YOUR_CLIENT_ID",
-        web3AuthNetwork: "sapphire_devnet",
-        enableLogging: false,
-      });
+      // Reuse existing Web3Auth instance initialized by the context
+      const web3auth: any = typeof window !== 'undefined' ? (window as any).__WEB3AUTH_INSTANCE__ : null;
+      if (!web3auth) {
+        throw new Error("Web3Auth not initialized. Initialize via Web3AuthContext.initModal() first.");
+      }
 
-      await web3auth.init();
+      if (typeof window !== 'undefined') {
+        console.debug('[SmartAccount] initSmartAccount: provider?', !!web3auth.provider);
+      }
 
       // Check if user is already connected
       if (!web3auth.provider) {
@@ -122,8 +121,17 @@ export async function initSmartAccount(): Promise<any> {
  * Get smart account address from Web3Auth provider (internal helper)
  */
 async function getProviderAddress(provider: IProvider): Promise<string> {
-  const accounts = await provider.request({ method: "eth_accounts" }) as string[];
-  return accounts[0];
+  try {
+    const accounts = await provider.request({ method: "eth_accounts" }) as string[];
+    if (!accounts || accounts.length === 0) {
+      console.warn('[SmartAccount] getProviderAddress: no accounts returned');
+      return '';
+    }
+    return accounts[0];
+  } catch (err) {
+    console.error('[SmartAccount] getProviderAddress error', err);
+    return '';
+  }
 }
 
 /**
