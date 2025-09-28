@@ -70,16 +70,77 @@ export function removeSponsoredElection(electionAddress: string): void {
 }
 
 /**
- * Get paymaster data for a transaction (placeholder for future implementation)
+ * Get paymaster data for a transaction using Pimlico
  */
 export async function getPaymasterData(
   target: string,
   data: string,
   value: string = "0x0"
 ): Promise<PaymasterData | null> {
-  // For now, return null to indicate no paymaster data
-  // In a real implementation, this would call a paymaster service
-  return null;
+  try {
+    const apiKey = process.env.NEXT_PUBLIC_PIMLICO_API_KEY;
+    if (!apiKey) {
+      console.warn("Pimlico API key not configured");
+      return null;
+    }
+
+    const response = await fetch(
+      `https://api.pimlico.io/v2/11155111/rpc`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'pm_sponsorUserOperation',
+          params: [
+            {
+              userOperation: {
+                sender: target,
+                nonce: '0x0',
+                callData: data,
+                callGasLimit: '0x0',
+                verificationGasLimit: '0x0',
+                preVerificationGas: '0x0',
+                maxFeePerGas: '0x0',
+                maxPriorityFeePerGas: '0x0',
+                paymasterAndData: '0x',
+                signature: '0x',
+              },
+              entryPoint: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+            },
+            {
+              type: 'payg',
+            },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Pimlico paymaster request failed:', response.statusText);
+      return null;
+    }
+
+    const result = await response.json();
+    if (result.error) {
+      console.error('Pimlico paymaster error:', result.error);
+      return null;
+    }
+
+    return {
+      paymasterAndData: result.result.paymasterAndData,
+      preVerificationGas: result.result.preVerificationGas,
+      verificationGasLimit: result.result.verificationGasLimit,
+      callGasLimit: result.result.callGasLimit,
+    };
+  } catch (error) {
+    console.error('Error getting paymaster data:', error);
+    return null;
+  }
 }
 
 /**

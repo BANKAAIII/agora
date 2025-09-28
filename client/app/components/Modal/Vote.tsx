@@ -21,7 +21,7 @@ const Vote = ({
   const { setelectionModal } = useElectionModal();
   const { writeContractAsync } = useWriteContract();
   const { chain } = useAccount();
-  const { isUsingSCW, smartAccount, isAuthenticated } = useWeb3Auth();
+  const { isUsingSCW, smartAccount, isAuthenticated, web3auth } = useWeb3Auth();
   const [isVoting, setIsVoting] = useState(false);
   const [sponsorshipStatus, setSponsorshipStatus] = useState<{
     isSponsored: boolean;
@@ -80,21 +80,46 @@ const Vote = ({
     // Vote array prepared
     setIsVoting(true);
     
+    console.log("🗳️ Voting Debug Info:", {
+      sponsorshipStatus,
+      isUsingSCW,
+      hasSmartAccount: !!smartAccount,
+      isAuthenticated,
+      electionAddress,
+      voteArray,
+    });
+    
     try {
       // For sponsored elections, use SMART ACCOUNT with PAYMASTER for TRUE gasless voting
       if (sponsorshipStatus?.isSponsored && isUsingSCW && smartAccount && isAuthenticated) {
-        // Using Smart Account for gasless voting
+        console.log("📡 Using Smart Account for gasless voting");
         
         // Use smart account with paymaster for sponsored elections
         const { ethers } = await import("ethers");
         const iface = new ethers.utils.Interface(Election);
         const voteData = iface.encodeFunctionData("userVote", [voteArray]);
         
-        // Send gasless transaction via paymaster
-        await sendTransactionWithPaymaster(electionAddress, voteData, "0x0", electionAddress);
+        console.log("🔧 Vote transaction data:", {
+          target: electionAddress,
+          data: voteData,
+          isSponsored: sponsorshipStatus?.isSponsored,
+        });
         
-        toast.success("🎉 Vote casted (100% gasless)!");
-        await refreshSponsorshipStatus();
+        // Send gasless transaction via paymaster
+        console.log("🔄 Sending gasless vote transaction...");
+        try {
+          const result = await sendTransactionWithPaymaster(electionAddress, voteData, "0x0", electionAddress, web3auth);
+          console.log("✅ Gasless vote transaction result:", result);
+          
+          toast.success("🎉 Vote casted (100% gasless)!");
+          await refreshSponsorshipStatus();
+        } catch (smartAccountError) {
+          console.error("❌ Smart Account gasless voting failed:", smartAccountError);
+          toast.error(`Gasless voting failed: ${smartAccountError.message}`);
+          
+          // TODO: Could add fallback to regular transaction here if needed
+          throw smartAccountError;
+        }
         
       } else if (sponsorshipStatus?.isSponsored) {
         // Sponsored election but no smart account

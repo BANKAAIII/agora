@@ -25,20 +25,8 @@ export const initWeb3Auth = async (): Promise<Web3Auth> => {
         clientId: web3AuthConfig.clientId,
         web3AuthNetwork: web3AuthConfig.web3AuthNetwork,
         enableLogging: web3AuthConfig.enableLogging,
-        accountAbstractionConfig: {
-          smartAccountType: "metamask",
-          chains: [
-            {
-              chainId: "0xaa36a7", // Sepolia
-              bundlerConfig: {
-                url: "https://api.pimlico.io/v2/11155111/rpc?apikey=pim_MiaYuXkQNsWzVGLeRJdyUG",
-              },
-              paymasterConfig: {
-                url: "https://api.pimlico.io/v2/11155111/rpc?apikey=pim_MiaYuXkQNsWzVGLeRJdyUG",
-              },
-            },
-          ],
-        },
+        // Account Abstraction will be configured via Web3Auth Dashboard
+        // This ensures Pimlico bundler/paymaster URLs are handled automatically
         // Override the chain config to ensure Sepolia RPC consistency
         chainConfig: {
           chainNamespace: "eip155",

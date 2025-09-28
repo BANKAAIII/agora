@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import toast from "react-hot-toast";
-
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { Election } from "../../../abi/artifacts/Election";
 import { ErrorMessage } from "../../helpers/ErrorMessage";
@@ -42,7 +41,15 @@ const AddCandidate = ({
     };
     try {
       const res = await pinJSONFile(jsonBody);
-      if (chain?.id === 43113) switchChain({ chainId: sepolia.id });
+      if (chain?.id === 43113) {
+        try {
+          await switchChain({ chainId: sepolia.id });
+        } catch (error: any) {
+          console.error("Chain switch error:", error);
+          toast.error(`Failed to switch chain: ${error.message || "Please try again."}`);
+          return;
+        }
+      }
       await writeContractAsync({
         address: electionAddress,
         abi: Election,

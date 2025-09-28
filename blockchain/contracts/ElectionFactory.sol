@@ -57,7 +57,7 @@ contract ElectionFactory is CCIPReceiver {
     // Sponsorship limits and configuration
     uint256 public constant MAX_SPONSORSHIP_PER_CREATOR = 10 ether;
     uint256 public constant MIN_SPONSORSHIP_AMOUNT = 0.01 ether;
-    uint256 public constant MAX_ACTIVE_ELECTIONS_PER_CREATOR = 5;
+    uint256 public constant MAX_ACTIVE_ELECTIONS_PER_CREATOR = 15;
 
     // Sponsorship events
     event ElectionCreatedWithSponsorship(
@@ -108,9 +108,9 @@ contract ElectionFactory is CCIPReceiver {
     ) external notBlacklisted(msg.sender) {
         if (_candidates.length<2) revert InvalidCandidatesLength();
         
-        // Check creator limits
+        // Check creator limits (only count truly active elections)
         require(
-            creatorElections[msg.sender].length < MAX_ACTIVE_ELECTIONS_PER_CREATOR,
+            getActiveElectionsCount(msg.sender) < MAX_ACTIVE_ELECTIONS_PER_CREATOR,
             "Too many active elections"
         );
         
@@ -159,9 +159,9 @@ contract ElectionFactory is CCIPReceiver {
             "Creator sponsorship limit exceeded"
         );
         
-        // Check creator limits
+        // Check creator limits (only count truly active elections)
         require(
-            creatorElections[msg.sender].length < MAX_ACTIVE_ELECTIONS_PER_CREATOR,
+            getActiveElectionsCount(msg.sender) < MAX_ACTIVE_ELECTIONS_PER_CREATOR,
             "Too many active elections"
         );
         
@@ -437,5 +437,81 @@ contract ElectionFactory is CCIPReceiver {
         // For efficiency, we might want to maintain global counters
         // For now, returning basic stats
         return (totalElections, 0, 0, 0);
+    }
+
+    /**
+     * @dev Get count of truly active elections for a creator (not ended)
+     * @param creator The creator address
+     * @return Number of active elections (not ended)
+     */
+    function getActiveElectionsCount(address creator) public view returns (uint256) {
+        address[] memory creatorElectionList = creatorElections[creator];
+        uint256 activeCount = 0;
+        
+        for (uint256 i = 0; i < creatorElectionList.length; i++) {
+            Election election = Election(payable(creatorElectionList[i]));
+            (, uint256 endTime, , ) = election.electionInfo();
+            
+            // Count as active if election hasn't ended yet
+            if (block.timestamp <= endTime) {
+                activeCount++;
+            }
+        }
+        
+        return activeCount;
+    }
+
+    /**
+     * @dev Clean up ended elections from a creator's list (gas optimization)
+     * @param creator The creator address
+     * This function removes ended elections from the tracking array to save gas on future checks
+     */
+    function cleanupEndedElections(address creator) external {
+        address[] storage creatorElectionList = creatorElections[creator];
+        uint256 writeIndex = 0;
+        
+        // Compact array by keeping only active elections
+        for (uint256 i = 0; i < creatorElectionList.length; i++) {
+            Election election = Election(payable(creatorElectionList[i]));
+            (, uint256 endTime, , ) = election.electionInfo();
+            
+            // Keep election if it's still active
+            if (block.timestamp <= endTime) {
+                if (writeIndex != i) {
+                    creatorElectionList[writeIndex] = creatorElectionList[i];
+                }
+                writeIndex++;
+            }
+        }
+        
+        // Remove excess elements
+        while (creatorElectionList.length > writeIndex) {
+            creatorElectionList.pop();
+        }
+    }
+
+    /**
+     * @dev Get all elections by creator with their status
+     * @param creator The creator address
+     * @return elections Array of election addresses
+     * @return isActive Array indicating if each election is active
+     */
+    function getCreatorElectionsWithStatus(address creator) external view returns (
+        address[] memory elections,
+        bool[] memory isActive
+    ) {
+        address[] memory creatorElectionList = creatorElections[creator];
+        elections = new address[](creatorElectionList.length);
+        isActive = new bool[](creatorElectionList.length);
+        
+        for (uint256 i = 0; i < creatorElectionList.length; i++) {
+            elections[i] = creatorElectionList[i];
+            
+            Election election = Election(payable(creatorElectionList[i]));
+            (, uint256 endTime, , ) = election.electionInfo();
+            isActive[i] = (block.timestamp <= endTime);
+        }
+        
+        return (elections, isActive);
     }
 }

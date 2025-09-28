@@ -2,11 +2,13 @@
 import React, { FormEvent, useState } from "react";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
 import { ELECTION_FACTORY_ADDRESS } from "../constants";
 import { ElectionFactory } from "../../abi/artifacts/ElectionFactory";
+import { useWeb3Auth } from "../context/Web3AuthContext";
+import { sendTransactionWithPaymaster } from "../helpers/smartAccountV2";
 import { ballotTypeMap } from "../helpers/votingInfo";
 import { DatePicker } from "rsuite";
-import toast, { Toaster } from "react-hot-toast";
 import { ErrorMessage } from "../helpers/ErrorMessage";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { sepolia } from "viem/chains";
@@ -21,6 +23,7 @@ const CreatePage: React.FC = () => {
   const { switchChain } = useSwitchChain();
   const { chain } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { isAuthenticated, isUsingSCW, smartAccount, web3auth } = useWeb3Auth();
   const [startTime, setStartTime] = useState<Date | null>(new Date(Date.now() + 10 * 60 * 1000)); // 10 minutes from now
   const [endTime, setEndTime] = useState<Date | null>(new Date(Date.now() + 24 * 60 * 60 * 1000)); // 24 hours from now
   const [candidates,setCandidates] = useState<Candidate[]>([])
@@ -28,8 +31,13 @@ const CreatePage: React.FC = () => {
   const [sponsorshipAmount, setSponsorshipAmount] = useState("0.01");
   const [estimatedGasCost, setEstimatedGasCost] = useState("0.005");
   
-  const changeChain = () => {
-    switchChain({ chainId: sepolia.id });
+  const changeChain = async () => {
+    try {
+      await switchChain({ chainId: sepolia.id });
+    } catch (error: any) {
+      console.error("Chain switch error:", error);
+      toast.error(`Failed to switch chain: ${error.message || "Please try again."}`);
+    }
   }
   interface Candidate {
     name: string;
@@ -56,6 +64,14 @@ const CreatePage: React.FC = () => {
   const createElection = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    
+    // Debug Web3Auth state
+    console.log("Web3Auth Debug:", {
+      isAuthenticated,
+      isUsingSCW,
+      hasSmartAccount: !!smartAccount,
+      smartAccountType: smartAccount?.constructor?.name,
+    });
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const ballotType = BigInt(selectedBallot);
@@ -97,40 +113,127 @@ const CreatePage: React.FC = () => {
     try {
       const value = isSponsored ? parseEther(sponsorshipAmount) : BigInt(0);
       
-      // Use different functions based on sponsorship
-      if (isSponsored && parseFloat(sponsorshipAmount) > 0) {
-        // Use createElectionWithSponsorship if available
-        await writeContractAsync({
-          address: ELECTION_FACTORY_ADDRESS,
-          abi: ElectionFactory,
-          functionName: "createElectionWithSponsorship",
-          args: [
-            { startTime: start, endTime: end, name, description }, // ElectionInfo object
-            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })), 
-            ballotType,
-            ballotType,
-          ],
-          value: value, // Send ETH for sponsorship
+      // Check if Web3Auth Smart Account is available and user is authenticated
+      if (isAuthenticated && isUsingSCW && smartAccount) {
+        // Use Web3Auth Smart Account - this will use Pimlico automatically
+        console.log("Using Web3Auth Smart Account for election creation");
+        
+        // Encode function data using ethers
+        const { ethers } = await import("ethers");
+        const iface = new ethers.utils.Interface(ElectionFactory as any);
+        
+        console.log("Transaction parameters:", {
+          contractAddress: ELECTION_FACTORY_ADDRESS,
+          startTime: start,
+          endTime: end,
+          candidates: candidates.length,
+          ballotType: ballotType.toString(),
+          isSponsored,
+          sponsorshipAmount,
+          value: value.toString(),
         });
+        
+        if (isSponsored && parseFloat(sponsorshipAmount) > 0) {
+          const data = iface.encodeFunctionData("createElectionWithSponsorship", [
+            { startTime: start, endTime: end, name, description },
+            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+            ballotType,
+            ballotType, // resultType - using same as ballotType for now
+          ]);
+          
+          try {
+            await sendTransactionWithPaymaster(
+              ELECTION_FACTORY_ADDRESS,
+              data,
+              value.toString(),
+              ELECTION_FACTORY_ADDRESS, // election address for sponsorship check
+              web3auth
+            );
+          } catch (smartAccountError) {
+            console.error("Smart Account transaction failed, trying regular transaction:", smartAccountError);
+            // Fallback to regular transaction
+            await writeContractAsync({
+              address: ELECTION_FACTORY_ADDRESS,
+              abi: ElectionFactory,
+              functionName: "createElectionWithSponsorship",
+              args: [
+                { startTime: start, endTime: end, name, description },
+                candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+                ballotType,
+                ballotType, // resultType - using same as ballotType for now
+              ],
+              value: value,
+            });
+          }
+        } else {
+          const data = iface.encodeFunctionData("createElection", [
+            { startTime: start, endTime: end, name, description },
+            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+            ballotType,
+            ballotType, // resultType - using same as ballotType for now
+          ]);
+          
+          try {
+            await sendTransactionWithPaymaster(
+              ELECTION_FACTORY_ADDRESS,
+              data,
+              "0x0",
+              ELECTION_FACTORY_ADDRESS, // election address for sponsorship check
+              web3auth
+            );
+          } catch (smartAccountError) {
+            console.error("Smart Account transaction failed, trying regular transaction:", smartAccountError);
+            // Fallback to regular transaction
+            await writeContractAsync({
+              address: ELECTION_FACTORY_ADDRESS,
+              abi: ElectionFactory,
+              functionName: "createElection",
+              args: [
+                { startTime: start, endTime: end, name, description },
+                candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+                ballotType,
+                ballotType, // resultType - using same as ballotType for now
+              ],
+            });
+          }
+        }
+        toast.success("Election created successfully using Web3Auth Smart Account!");
       } else {
-        // Use regular createElection for non-sponsored elections
-        await writeContractAsync({
-          address: ELECTION_FACTORY_ADDRESS,
-          abi: ElectionFactory,
-          functionName: "createElection",
-          args: [
-            { startTime: start, endTime: end, name, description }, // ElectionInfo object
-            candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })), 
-            ballotType,
-            ballotType,
-          ],
-          // No value for non-sponsored elections
-        });
+        // Fallback to regular wagmi transaction
+        console.log("Using regular wagmi transaction for election creation");
+        
+        if (isSponsored && parseFloat(sponsorshipAmount) > 0) {
+          await writeContractAsync({
+            address: ELECTION_FACTORY_ADDRESS,
+            abi: ElectionFactory,
+            functionName: "createElectionWithSponsorship",
+            args: [
+              { startTime: start, endTime: end, name, description },
+              candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+              ballotType,
+              ballotType, // resultType - using same as ballotType for now
+            ],
+            value: value,
+          });
+        } else {
+          await writeContractAsync({
+            address: ELECTION_FACTORY_ADDRESS,
+            abi: ElectionFactory,
+            functionName: "createElection",
+            args: [
+              { startTime: start, endTime: end, name, description },
+              candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
+              ballotType,
+              ballotType, // resultType - using same as ballotType for now
+            ],
+          });
+        }
+        toast.success("Election created successfully!");
       }
-      toast.success("Election created successfully!");
+      
       router.push("/");
     } catch (error) {
-              // Election creation failed
+      console.error("Election creation error:", error);
       toast.error(ErrorMessage(error));
     }
   };
