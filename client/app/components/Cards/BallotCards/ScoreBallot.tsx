@@ -42,7 +42,7 @@ const ScoreBallot = ({
 
     if (newSum > 100) {
       toast.error("Credit Limit Exceeded !!");
-      console.log("Error credits");
+      // Invalid credits
       return;
     }
     newCreditScores[id] = credits;

@@ -1,0 +1,523 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AlreadyVoted",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ElectionInactive",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ElectionIncomplete",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "GetVotes",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidCandidateID",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidInitialization",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInitializing",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "OwnerPermissioned",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "version",
+						"type": "uint64"
+					}
+				],
+				"name": "Initialized",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_description",
+						"type": "string"
+					}
+				],
+				"name": "addCandidate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "candidates",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "candidateID",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "_voteArr",
+						"type": "uint256[]"
+					}
+				],
+				"name": "ccipVote",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "electionId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "electionInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "startTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "endTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "factoryContract",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCandidateList",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "candidateID",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "description",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Election.Candidate[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getResult",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getWinners",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "startTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "endTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "description",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Election.ElectionInfo",
+						"name": "_electionInfo",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "candidateID",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "description",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Election.Candidate[]",
+						"name": "_candidates",
+						"type": "tuple[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_resultType",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_electionId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_ballot",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_resultCalculator",
+						"type": "address"
+					}
+				],
+				"name": "initialize",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					}
+				],
+				"name": "removeCandidate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "resultType",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "resultsDeclared",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalVotes",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "voteArr",
+						"type": "uint256[]"
+					}
+				],
+				"name": "userVote",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "userVoted",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "isVoted",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "winners",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"InvalidInitialization()": [
+					{
+						"details": "The contract is already initialized."
+					}
+				],
+				"NotInitializing()": [
+					{
+						"details": "The contract is not initializing."
+					}
+				]
+			},
+			"events": {
+				"Initialized(uint64)": {
+					"details": "Triggered when the contract has been initialized or reinitialized."
+				}
+			},
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"blockchain/contracts/Election.sol": "Election"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/proxy/utils/Initializable.sol": {
+			"keccak256": "0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08",
+				"dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q"
+			]
+		},
+		"blockchain/contracts/Election.sol": {
+			"keccak256": "0xbd93f7924a387bcae2f39b87f4a18edfc3cda09676fdd501d1ec059845385db2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5735c45beb66c3465dde72c3f83ffc97adb15e5faba77dd797ec4cff977e4c19",
+				"dweb:/ipfs/QmY8jUER59duwurhKwNVunVoF6dEcoe6HfGJ6VoSWajXY5"
+			]
+		},
+		"blockchain/contracts/ballots/interface/Errors.sol": {
+			"keccak256": "0x8f3b8ed0bc72b407985cf42fd666649b19508eddb4cea6b624ba2cb5df82eeae",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://fab566196995dea08dedae0a5013587560113079a8b28a2eb37ed6d4bee3b9e9",
+				"dweb:/ipfs/QmPJm8sfHuZHVXTus3QprzHcoiTp7QxFBT3RRfza8yXTG1"
+			]
+		},
+		"blockchain/contracts/ballots/interface/IBallot.sol": {
+			"keccak256": "0xc35374b2eefd4ec121c856d0508c9ff2a0d2bee2952ca9f2d3bc0c79141742b8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://05f955c6922334fc7e5fdc8e4563206538d662624370f2409306a7263b991093",
+				"dweb:/ipfs/QmQygje6SLCcjMSjWqyf4oP12iJuetKXmLkBNoeA8Z6UZe"
+			]
+		},
+		"blockchain/contracts/resultCalculators/interface/Errors.sol": {
+			"keccak256": "0x192a11a7fd91f9e473486c385966b688a283ccfb974e8de3ab97d328667eb0f9",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://26f74952a954585a92521dad1aa99f32c135b11fa03a4943ae015226f08d1014",
+				"dweb:/ipfs/QmVnhyw6Q5KH5dAyquCLs91ApvWfyFygAF7Mkybaqvunt2"
+			]
+		},
+		"blockchain/contracts/resultCalculators/interface/IResultCalculator.sol": {
+			"keccak256": "0x9b0eba31494a299c553626ceb362d6057eef32ea363f6b3f1581e38497eee312",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://cb6e352315b27cb0c2e4779f428cfa0ce2bbf866480e92e3a43b64cbb4c6eba1",
+				"dweb:/ipfs/QmbLzscy17E4v59sBGaZvHXVL3cg1ZEtnmJowbpvHWSi5K"
+			]
+		}
+	},
+	"version": 1
+}

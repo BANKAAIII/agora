@@ -7,6 +7,7 @@ import ClipBoard from "../../components/Helper/ClipBoard";
 import ElectionCandidates from "../../components/Cards/ElectionCandidates";
 import { Toaster } from "react-hot-toast";
 import ButtonCard from "../../components/Cards/ButtonCard";
+import SponsorshipManager from "../../components/Helper/SponsorshipManager";
 import { useElectionData } from "@/app/hooks/ElectionInfo";
 import CrossChain from "@/app/components/Helper/CrossChain";
 import { useElectionInformation } from "@/app/components/Hooks/GetElectionInformation";
@@ -63,6 +64,14 @@ const ElectionPage = ({ params }: { params: { id: `0x${string}` } }) => {
             electionStat={electionStat}
           />
           <ButtonCard isOwner={owner === address} />
+        </div>
+        
+        {/* Sponsorship Manager - Show for owners or display status for voters */}
+        <div className="mt-6">
+          <SponsorshipManager 
+            electionAddress={electionAddress}
+            isOwner={owner === address}
+          />
         </div>
         <div className="md:flex-row gap-x-4 flex flex-col items-center sm:items-stretch justify-between">
           <ClipBoard inputValue={window.location.href} />
