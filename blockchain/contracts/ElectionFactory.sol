@@ -18,11 +18,16 @@ contract ElectionFactory is CCIPReceiver {
     error CreatorSponsorshipLimitExceeded();
     error InvalidSponsorshipAmount();
     error ElectionNotSponsored();
+    // New errors for private elections
+    error InvalidWhitelistEntry();
+    error PrivateElectionRequiresSponsorship();
 
     struct CCIPVote {
         address election;
         address user;
         uint[] voteArr;
+        string userIdentifier;
+        uint8 identifierType;
     }
 
     // New struct for creator sponsorship tracking
@@ -53,6 +58,11 @@ contract ElectionFactory is CCIPReceiver {
     mapping(address => CreatorSponsorshipInfo) public creatorSponsorshipInfo;
     mapping(address => address[]) public creatorElections; // Track elections by creator
     mapping(address => bool) public blacklistedCreators;
+    
+    // Private elections tracking
+    mapping(address => bool) public isPrivateElection;
+    address[] public privateElections;
+    address[] public publicElections;
 
     // Sponsorship limits and configuration
     uint256 public constant MAX_SPONSORSHIP_PER_CREATOR = 10 ether;
@@ -75,6 +85,10 @@ contract ElectionFactory is CCIPReceiver {
     event CreatorBlacklisted(address indexed creator, string reason);
     event CreatorUnblacklisted(address indexed creator);
     event SponsorshipLimitUpdated(uint256 oldLimit, uint256 newLimit);
+    
+    // Private election events
+    event PrivateElectionCreated(address indexed election, address indexed creator);
+    event PublicElectionCreated(address indexed election, address indexed creator);
 
     event MessageReceived(
         bytes32 indexed messageId,
@@ -138,10 +152,15 @@ contract ElectionFactory is CCIPReceiver {
         creatorElections[msg.sender].push(address(election));
         creatorSponsorshipInfo[msg.sender].totalElectionsCreated++;
         creatorSponsorshipInfo[msg.sender].lastElectionCreated = block.timestamp;
+        
+        // Track as public election
+        publicElections.push(address(election));
+        emit PublicElectionCreated(address(election), msg.sender);
     }
 
     /**
-     * @dev Create election with initial sponsorship
+     * @dev Create election with initial sponsorship (DEPRECATED: Use createPrivateElection for sponsored elections)
+     * This function is maintained for backward compatibility but should not be used for new implementations
      */
     function createElectionWithSponsorship(
         Election.ElectionInfo memory _electionInfo,
@@ -202,6 +221,10 @@ contract ElectionFactory is CCIPReceiver {
             msg.value,
             creatorSponsorshipInfo[msg.sender].totalSponsorshipDeposited
         );
+        
+        // Track as public election
+        publicElections.push(address(election));
+        emit PublicElectionCreated(address(election), msg.sender);
     }
 
     function deleteElection(uint _electionId) external {
@@ -237,6 +260,100 @@ contract ElectionFactory is CCIPReceiver {
         }
     }
 
+    /**
+     * @dev Create private election with whitelist and mandatory sponsorship
+     */
+    function createPrivateElection(
+        Election.ElectionInfo memory _electionInfo,
+        Election.Candidate[] memory _candidates,
+        uint _ballotType,
+        uint _resultType,
+        Election.WhitelistEntry[] memory _whitelist
+    ) external payable notBlacklisted(msg.sender) {
+        if (_candidates.length < 2) revert InvalidCandidatesLength();
+        
+        // Sponsorship is optional for private elections, but if provided, must meet minimum
+        if (msg.value > 0 && msg.value < MIN_SPONSORSHIP_AMOUNT) {
+            revert InvalidSponsorshipAmount();
+        }
+        
+        // Validate whitelist entries
+        for (uint i = 0; i < _whitelist.length; i++) {
+            if (_whitelist[i].identifierType > 4) revert InvalidWhitelistEntry();
+            if (bytes(_whitelist[i].identifier).length == 0) revert InvalidWhitelistEntry();
+        }
+        
+        // Check creator sponsorship limits
+        uint256 totalCreatorSponsorship = creatorSponsorshipInfo[msg.sender].totalSponsorshipDeposited;
+        require(
+            totalCreatorSponsorship + msg.value <= MAX_SPONSORSHIP_PER_CREATOR,
+            "Creator sponsorship limit exceeded"
+        );
+        
+        // Check creator limits
+        require(
+            getActiveElectionsCount(msg.sender) < MAX_ACTIVE_ELECTIONS_PER_CREATOR,
+            "Too many active elections"
+        );
+        
+        // Set isPrivate to true
+        _electionInfo.isPrivate = true;
+        
+        // Create election
+        address electionAddress = Clones.clone(electionGenerator);
+        address _ballot = ballotGenerator.generateBallot(
+            _ballotType,
+            electionAddress
+        );
+        Election election = Election(payable(electionAddress));
+        election.initialize(
+            _electionInfo,
+            _candidates,
+            _resultType,
+            electionCount,
+            _ballot,
+            msg.sender,
+            resultCalculator
+        );
+        
+        // Add whitelist entries to the election
+        if (_whitelist.length > 0) {
+            election.addToWhitelist(_whitelist);
+        }
+        
+        // Add sponsorship to the election if provided
+        if (msg.value > 0) {
+            election.addSponsorship{value: msg.value}();
+        }
+        
+        electionCount++;
+        electionOwner[openBasedElections.length] = msg.sender;
+        openBasedElections.push(address(election));
+        
+        // Track creator's elections and sponsorship
+        creatorElections[msg.sender].push(address(election));
+        creatorSponsorshipInfo[msg.sender].totalElectionsCreated++;
+        if (msg.value > 0) {
+            creatorSponsorshipInfo[msg.sender].totalSponsorshipDeposited += msg.value;
+            creatorSponsorshipInfo[msg.sender].activeSponsorships++;
+        }
+        creatorSponsorshipInfo[msg.sender].lastElectionCreated = block.timestamp;
+        
+        // Track as private election
+        isPrivateElection[address(election)] = true;
+        privateElections.push(address(election));
+        
+        emit PrivateElectionCreated(address(election), msg.sender);
+        if (msg.value > 0) {
+            emit ElectionCreatedWithSponsorship(
+                msg.sender,
+                address(election),
+                msg.value,
+                creatorSponsorshipInfo[msg.sender].totalSponsorshipDeposited
+            );
+        }
+    }
+
     function addWhitelistedContract(
         uint64 _sourceChainSelector,
         address _contractAddress
@@ -252,7 +369,7 @@ contract ElectionFactory is CCIPReceiver {
 
     function ccipVote(CCIPVote memory _vote) internal {
         Election _election = Election(payable(_vote.election));
-        _election.ccipVote(_vote.user, _vote.voteArr);
+        _election.ccipVote(_vote.user, _vote.voteArr, _vote.userIdentifier, _vote.identifierType);
     }
 
     // any2EvmMessage.messageId shows the address of senderContract
@@ -450,7 +567,7 @@ contract ElectionFactory is CCIPReceiver {
         
         for (uint256 i = 0; i < creatorElectionList.length; i++) {
             Election election = Election(payable(creatorElectionList[i]));
-            (, uint256 endTime, , ) = election.electionInfo();
+            (, uint256 endTime, , , ) = election.electionInfo();
             
             // Count as active if election hasn't ended yet
             if (block.timestamp <= endTime) {
@@ -473,7 +590,7 @@ contract ElectionFactory is CCIPReceiver {
         // Compact array by keeping only active elections
         for (uint256 i = 0; i < creatorElectionList.length; i++) {
             Election election = Election(payable(creatorElectionList[i]));
-            (, uint256 endTime, , ) = election.electionInfo();
+            (, uint256 endTime, , , ) = election.electionInfo();
             
             // Keep election if it's still active
             if (block.timestamp <= endTime) {
@@ -508,10 +625,82 @@ contract ElectionFactory is CCIPReceiver {
             elections[i] = creatorElectionList[i];
             
             Election election = Election(payable(creatorElectionList[i]));
-            (, uint256 endTime, , ) = election.electionInfo();
+            (, uint256 endTime, , , ) = election.electionInfo();
             isActive[i] = (block.timestamp <= endTime);
         }
         
         return (elections, isActive);
+    }
+
+    // ============ PRIVATE ELECTION GETTER FUNCTIONS ============
+
+    /**
+     * @dev Get all public elections
+     * @return Array of public election addresses
+     */
+    function getPublicElections() external view returns (address[] memory) {
+        return publicElections;
+    }
+
+    /**
+     * @dev Get all private elections
+     * @return Array of private election addresses
+     */
+    function getPrivateElections() external view returns (address[] memory) {
+        return privateElections;
+    }
+
+    /**
+     * @dev Check if an election is private
+     * @param electionAddress The election address to check
+     * @return True if the election is private
+     */
+    function getIsPrivateElection(address electionAddress) external view returns (bool) {
+        return isPrivateElection[electionAddress];
+    }
+
+    /**
+     * @dev Get accessible elections for a user
+     * @param user User's wallet address
+     * @param userIdentifier User's identifier
+     * @param identifierType Type of identifier
+     * @return accessibleElections Array of election addresses the user can access
+     */
+    function getAccessibleElections(
+        address user,
+        string memory userIdentifier,
+        uint8 identifierType
+    ) external view returns (address[] memory accessibleElections) {
+        // Start with all public elections
+        uint256 accessibleCount = publicElections.length;
+        
+        // Check private elections for accessibility
+        for (uint256 i = 0; i < privateElections.length; i++) {
+            Election election = Election(payable(privateElections[i]));
+            if (election.canUserAccess(user, userIdentifier, identifierType)) {
+                accessibleCount++;
+            }
+        }
+        
+        // Build the accessible elections array
+        accessibleElections = new address[](accessibleCount);
+        uint256 index = 0;
+        
+        // Add all public elections
+        for (uint256 i = 0; i < publicElections.length; i++) {
+            accessibleElections[index] = publicElections[i];
+            index++;
+        }
+        
+        // Add accessible private elections
+        for (uint256 i = 0; i < privateElections.length; i++) {
+            Election election = Election(payable(privateElections[i]));
+            if (election.canUserAccess(user, userIdentifier, identifierType)) {
+                accessibleElections[index] = privateElections[i];
+                index++;
+            }
+        }
+        
+        return accessibleElections;
     }
 }

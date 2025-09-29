@@ -22,8 +22,9 @@ contract MockCCIPReceiverRouter {
         ElectionFactory.CCIPVote memory  vote =  ElectionFactory.CCIPVote({
             election:_election, 
             user:_user , 
-            voteArr:_voteArr
-            
+            voteArr:_voteArr,
+            userIdentifier: "",
+            identifierType: 4
         });
 
         bytes memory encodedVote = abi.encode(vote);
