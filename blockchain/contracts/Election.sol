@@ -19,6 +19,10 @@ contract Election is Initializable {
     error OnlySponsorCanWithdraw();
     error InsufficientBalance();
     error EmergencyWithdrawalFailed();
+    // New errors for private elections
+    error NotWhitelisted();
+    error ElectionIsPrivate();
+    error InvalidIdentifierType();
 
     mapping(address user => bool isVoted) public userVoted;
 
@@ -27,6 +31,7 @@ contract Election is Initializable {
         uint endTime;
         string name;
         string description;
+        bool isPrivate;
         // Election type: 0 for invite based 1 for open
     }
 
@@ -48,6 +53,13 @@ contract Election is Initializable {
         bool emergencyWithdrawalEnabled;
     }
 
+    // Struct for whitelist entries
+    struct WhitelistEntry {
+        string identifier;
+        uint8 identifierType; // 0=email, 1=twitter, 2=farcaster, 3=github, 4=wallet
+        bool isActive;
+    }
+
     modifier onlyOwner() {
         if (msg.sender != owner) revert OwnerPermissioned();
         _;
@@ -60,6 +72,15 @@ contract Election is Initializable {
 
     modifier onlySponsor() {
         if (msg.sender != sponsorshipInfo.sponsor) revert OnlySponsorCanWithdraw();
+        _;
+    }
+
+    modifier onlyWhitelisted(address user, string memory userIdentifier, uint8 identifierType) {
+        if (electionInfo.isPrivate) {
+            if (!isWhitelisted(user, userIdentifier, identifierType)) {
+                revert NotWhitelisted();
+            }
+        }
         _;
     }
 
@@ -96,6 +117,10 @@ contract Election is Initializable {
 
     // Sponsorship state variables
     SponsorshipInfo public sponsorshipInfo;
+
+    // Private election whitelist
+    WhitelistEntry[] public whitelist;
+    mapping(bytes32 => bool) public whitelistLookup; // keccak256(identifier, identifierType) => isWhitelisted
     uint256 public constant MIN_SPONSORSHIP_AMOUNT = 0.01 ether;
     uint256 public constant GAS_BUFFER = 50000;
     uint256 public constant EMERGENCY_WITHDRAWAL_THRESHOLD = 0.1 ether; // 10% of total deposited
@@ -107,6 +132,11 @@ contract Election is Initializable {
     event EmergencyWithdrawal(address indexed sponsor, uint256 amount, string reason);
     event SponsorshipEnabled(address indexed sponsor, uint256 initialAmount);
     event SponsorshipDisabled(address indexed sponsor);
+
+    // Private election events
+    event WhitelistEntryAdded(string indexed identifier, uint8 identifierType);
+    event WhitelistEntryRemoved(string indexed identifier, uint8 identifierType);
+    event PrivateElectionCreated(address indexed owner);
 
     function initialize(
         ElectionInfo memory _electionInfo,
@@ -148,8 +178,13 @@ contract Election is Initializable {
     }
 
     // Voting function: allow voting even if sponsorship is depleted (user pays gas)
-    function userVote(uint[] memory voteArr) external electionActive {
+    function userVote(uint[] memory voteArr, string memory userIdentifier, uint8 identifierType) external electionActive {
         if (userVoted[msg.sender]) revert AlreadyVoted();
+        
+        // Check if user is whitelisted for private elections
+        if (electionInfo.isPrivate && !isWhitelisted(msg.sender, userIdentifier, identifierType)) {
+            revert NotWhitelisted();
+        }
 
         if (ballotInitialized == false) {
             ballot.init(candidates.length);
@@ -178,14 +213,22 @@ contract Election is Initializable {
 
     function ccipVote(
         address user,
-        uint[] memory _voteArr
+        uint[] memory _voteArr,
+        string memory userIdentifier,
+        uint8 identifierType
     ) external electionActive {
         if (userVoted[user]) revert AlreadyVoted();
+        if (msg.sender != factoryContract) revert OwnerPermissioned();
+        
+        // Check if user is whitelisted for private elections
+        if (electionInfo.isPrivate && !isWhitelisted(user, userIdentifier, identifierType)) {
+            revert NotWhitelisted();
+        }
+        
         if (ballotInitialized == false) {
             ballot.init(candidates.length);
             ballotInitialized = true;
         }
-        if (msg.sender != factoryContract) revert OwnerPermissioned();
         userVoted[user] = true;
         ballot.vote(_voteArr);
         totalVotes++;
@@ -433,6 +476,124 @@ contract Election is Initializable {
         utilizationRate = (totalUsed * 100) / sponsorshipInfo.totalDeposited;
         
         return (efficiency, costPerVote, utilizationRate);
+    }
+
+    // ============ PRIVATE ELECTION FUNCTIONS ============
+
+    /**
+     * @dev Add entries to the whitelist (only owner)
+     * @param entries Array of whitelist entries to add
+     */
+    function addToWhitelist(WhitelistEntry[] calldata entries) external onlyOwnerOrFactory {
+        for (uint i = 0; i < entries.length; i++) {
+            WhitelistEntry memory entry = entries[i];
+            if (entry.identifierType > 4) revert InvalidIdentifierType();
+            
+            bytes32 key = keccak256(abi.encodePacked(entry.identifier, entry.identifierType));
+            
+            if (!whitelistLookup[key]) {
+                whitelist.push(entry);
+                whitelistLookup[key] = true;
+                emit WhitelistEntryAdded(entry.identifier, entry.identifierType);
+            }
+        }
+    }
+
+    /**
+     * @dev Remove entries from the whitelist (only owner)
+     * @param identifiers Array of identifier strings to remove
+     * @param identifierTypes Array of corresponding identifier types
+     */
+    function removeFromWhitelist(string[] calldata identifiers, uint8[] calldata identifierTypes) external onlyOwner {
+        require(identifiers.length == identifierTypes.length, "Array length mismatch");
+        
+        for (uint i = 0; i < identifiers.length; i++) {
+            bytes32 key = keccak256(abi.encodePacked(identifiers[i], identifierTypes[i]));
+            
+            if (whitelistLookup[key]) {
+                whitelistLookup[key] = false;
+                
+                // Find and remove from whitelist array
+                for (uint j = 0; j < whitelist.length; j++) {
+                    if (keccak256(abi.encodePacked(whitelist[j].identifier)) == keccak256(abi.encodePacked(identifiers[i])) &&
+                        whitelist[j].identifierType == identifierTypes[i]) {
+                        whitelist[j].isActive = false;
+                        break;
+                    }
+                }
+                
+                emit WhitelistEntryRemoved(identifiers[i], identifierTypes[i]);
+            }
+        }
+    }
+
+    /**
+     * @dev Check if a user is whitelisted
+     * @param user User's wallet address
+     * @param userIdentifier User's identifier (email, username, etc.)
+     * @param identifierType Type of identifier
+     * @return True if user is whitelisted
+     */
+    function isWhitelisted(address user, string memory userIdentifier, uint8 identifierType) public view returns (bool) {
+        if (!electionInfo.isPrivate) return true; // Public elections allow everyone
+        
+        // Check wallet address whitelist
+        bytes32 walletKey = keccak256(abi.encodePacked(addressToString(user), uint8(4)));
+        if (whitelistLookup[walletKey]) return true;
+        
+        // Check user identifier whitelist
+        bytes32 identifierKey = keccak256(abi.encodePacked(userIdentifier, identifierType));
+        return whitelistLookup[identifierKey];
+    }
+
+    /**
+     * @dev Get the current whitelist
+     * @return Array of whitelist entries
+     */
+    function getWhitelist() external view returns (WhitelistEntry[] memory) {
+        uint activeCount = 0;
+        for (uint i = 0; i < whitelist.length; i++) {
+            if (whitelist[i].isActive) activeCount++;
+        }
+        
+        WhitelistEntry[] memory activeWhitelist = new WhitelistEntry[](activeCount);
+        uint index = 0;
+        for (uint i = 0; i < whitelist.length; i++) {
+            if (whitelist[i].isActive) {
+                activeWhitelist[index] = whitelist[i];
+                index++;
+            }
+        }
+        return activeWhitelist;
+    }
+
+    /**
+     * @dev Check if a user can access this election
+     * @param user User's wallet address
+     * @param userIdentifier User's identifier 
+     * @param identifierType Type of identifier
+     * @return True if user can access
+     */
+    function canUserAccess(address user, string memory userIdentifier, uint8 identifierType) external view returns (bool) {
+        return isWhitelisted(user, userIdentifier, identifierType);
+    }
+
+    /**
+     * @dev Convert address to string
+     * @param addr Address to convert
+     * @return String representation of address
+     */
+    function addressToString(address addr) internal pure returns (string memory) {
+        bytes32 value = bytes32(uint256(uint160(addr)));
+        bytes memory alphabet = "0123456789abcdef";
+        bytes memory str = new bytes(42);
+        str[0] = '0';
+        str[1] = 'x';
+        for (uint i = 0; i < 20; i++) {
+            str[2+i*2] = alphabet[uint(uint8(value[i + 12] >> 4))];
+            str[3+i*2] = alphabet[uint(uint8(value[i + 12] & 0x0f))];
+        }
+        return string(str);
     }
 
     /**
