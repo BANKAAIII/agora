@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Web3Auth } from "@web3auth/modal";
+import type { Web3Auth as Web3AuthType } from "@web3auth/modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // OpenLogin adapter not needed with pure v10 Wallet Discovery
 // Using pure v10 Wallet Discovery; no explicit external adapters
@@ -36,13 +36,13 @@ export const useWeb3Auth = () => {
 };
 
 // Singleton Web3Auth instance
-let web3authInstance: Web3Auth | null = null;
+let web3authInstance: Web3AuthType | null = null;
 let isInitializing = false;
 let isInitialized = false;
 let didInitModal = false;
 
 // Initialize Web3Auth instance (singleton)
-const initWeb3Auth = async (): Promise<Web3Auth> => {
+const initWeb3Auth = async (): Promise<Web3AuthType> => {
   // Return existing instance if already initialized
   if (web3authInstance && isInitialized) {
     if (typeof window !== 'undefined') {
@@ -79,69 +79,37 @@ const initWeb3Auth = async (): Promise<Web3Auth> => {
       clientIdPreview: clientId ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}` : null,
       hasSepoliaRpc: !!process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL,
     });
-    console.debug('[Web3Auth] Import check', {
-      Web3AuthType: typeof Web3Auth,
-      hasPrototypeInitModal: typeof (Web3Auth as any)?.prototype?.initModal,
-      hasPrototypeInit: typeof (Web3Auth as any)?.prototype?.init,
-      hasPrototypeConnect: typeof (Web3Auth as any)?.prototype?.connect,
-    });
+    // Client-only dynamic import; avoids evaluating SDK on server/build
+    const { Web3Auth } = await import("@web3auth/modal");
     
     if (!clientId || clientId === "YOUR_CLIENT_ID") {
       console.error('[Web3Auth] Missing NEXT_PUBLIC_WEB3AUTH_CLIENT_ID');
       throw new Error("Web3Auth Client ID is not set or is using placeholder value");
     }
 
-    // Create new instance with different configuration
+    // Create new Web3Auth instance (client-only)
     web3authInstance = new Web3Auth({
       clientId: clientId,
       web3AuthNetwork: "sapphire_devnet",
       enableLogging: false,
     });
 
-    // Initialize the Web3Auth instance properly
-    await web3authInstance.init();
-    
-    // Check if there's an initModal method available
-    if (typeof (web3authInstance as any).initModal === 'function') {
-      try {
-        console.debug('[Web3Auth] initModal() starting');
-        await (web3authInstance as any).initModal();
-        console.debug('[Web3Auth] initModal() completed');
+    // Initialize Web3Auth using v10 approach
+    try {
+      console.debug('[Web3Auth] init() starting');
+      await web3authInstance.init();
+      console.debug('[Web3Auth] init() completed');
+      didInitModal = true;
+    } catch (e) {
+      // Ignore already-initialized errors in dev hot reload; rethrow others
+      const msg = (e as any)?.message || '';
+      if (msg.includes('Adapter is already initialized') || msg.includes('already initialized')) {
+        console.warn('[Web3Auth] init() already initialized - continuing');
         didInitModal = true;
-      } catch (e) {
-        // Ignore already-initialized errors in dev hot reload; rethrow others
-        const msg = (e as any)?.message || '';
-        if (msg.includes('Adapter is already initialized')) {
-          console.warn('[Web3Auth] initModal() already initialized - continuing');
-          didInitModal = true;
-        } else {
-          console.error('[Web3Auth] initModal() error - aborting initialization', e);
-          throw e;
-        }
-      }
-    } else if (typeof (web3authInstance as any).init === 'function') {
-      // Fallback for builds exposing `init` instead of `initModal`
-      console.warn('[Web3Auth] initModal() missing, using init() fallback');
-      try {
-        console.debug('[Web3Auth] init() starting');
-        await (web3authInstance as any).init();
-        console.debug('[Web3Auth] init() completed');
-        didInitModal = true;
-      } catch (e) {
+      } else {
         console.error('[Web3Auth] init() error - aborting initialization', e);
         throw e;
       }
-    } else {
-      console.error('[Web3Auth] Neither initModal() nor init() found on instance. Diagnostics:', {
-        hasInit: typeof (web3authInstance as any).init,
-        hasConnect: typeof (web3authInstance as any).connect,
-        ctorName: (web3authInstance as any)?.constructor?.name,
-      });
-      try {
-        const proto2 = Object.getPrototypeOf(web3authInstance as any);
-        console.debug('[Web3Auth] Prototype methods (fallback log)', Object.getOwnPropertyNames(proto2));
-        console.debug('[Web3Auth] Own keys (fallback log)', Object.keys(web3authInstance as any));
-      } catch {}
     }
     
     // Web3Auth Modal SDK is ready after instantiation
@@ -166,7 +134,7 @@ const initWeb3Auth = async (): Promise<Web3Auth> => {
 };
 
 export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
+  const [web3auth, setWeb3auth] = useState<Web3AuthType | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [address, setAddress] = useState<string | null>(null);
@@ -202,13 +170,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return;
         }
 
-        // Check if Web3Auth is available
-        if (typeof Web3Auth === 'undefined') {
-          console.debug('[Web3Auth] Skipping init: Web3Auth undefined');
-          return;
-        }
-
-                      // Initialize Web3Auth using singleton pattern with Smart Accounts enabled
+        // Initialize Web3Auth using singleton pattern with Smart Accounts enabled
         console.debug('[Web3Auth] Calling initWeb3Auth() ...');
         const web3AuthInstance = await initWeb3Auth();
         console.debug('[Web3Auth] initWeb3Auth() resolved', {
@@ -217,7 +179,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         });
         
         // Set up event listeners before any operations
-        web3AuthInstance.on("connected", (data) => {
+        web3AuthInstance.on("connected", (data: any) => {
           console.debug('[Web3Auth] Event: connected', data);
           setIsAuthenticated(true);
         });
@@ -233,7 +195,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setAddress(null);
         });
 
-        web3AuthInstance.on("errored", (error) => {
+        web3AuthInstance.on("errored", (error: any) => {
           console.error('[Web3Auth] Event: errored', error);
           // Silent error handling - errors will be caught by try/catch blocks
         });
@@ -393,7 +355,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsLoading(true);
     try {
       console.debug('[Web3Auth] login() starting');
-      // Single connect call (v10 opens the modal). If user cancels, this throws.
+      // Use Web3Auth connect method to open the modal
       const provider = await web3auth.connect();
       console.debug('[Web3Auth] connect() resolved', { hasProvider: !!provider });
       if (!provider) {

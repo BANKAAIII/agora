@@ -1,5 +1,5 @@
 "use client";
-import { sepolia, avalancheFuji } from "viem/chains";
+import { sepolia, avalancheFuji } from "@/app/config/chains";
 
 export interface ChainConfig {
   id: number;

@@ -1,6 +1,6 @@
 import { ElectionFactory } from "@/abi/artifacts/ElectionFactory";
 import { ELECTION_FACTORY_ADDRESS } from "@/app/constants";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { useReadContract } from "wagmi";
 import { useWeb3Auth } from "@/app/context/Web3AuthContext";
 import { getCurrentUserIdentifier } from "@/app/helpers/userIdentification";

@@ -2,9 +2,8 @@ import { CCIPSender } from "@/abi/artifacts/CCIPSender";
 import { CCIP_FUJI_ADDRESS, LINK_FUJI } from "@/app/constants";
 import React, { useEffect, useState } from "react";
 import { erc20Abi } from "viem";
-import { avalancheFuji } from "viem/chains";
+import { avalancheFuji } from "@/app/config/chains";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import toast from "react-hot-toast";
 const CrossChain = ({
   electionAddress,
   isEnded,
@@ -20,15 +19,7 @@ const CrossChain = ({
   const [buttonValue, setbuttonValue] = useState(false);
   const addCrossChain = async () => {
     try {
-      if (chain?.id !== 43113) {
-        try {
-          await switchChain({ chainId: avalancheFuji.id });
-        } catch (error: any) {
-          console.error("Chain switch error:", error);
-          toast.error(`Failed to switch chain: ${error.message || "Please try again."}`);
-          return;
-        }
-      }
+      if (chain?.id !== 43113) switchChain({ chainId: avalancheFuji.id });
       await writeContractAsync({
         address: LINK_FUJI,
         abi: erc20Abi,
@@ -43,7 +34,7 @@ const CrossChain = ({
       });
       setbuttonValue(true);
     } catch (error) {
-      // CrossChain error occurred
+      console.log("Error : ", error);
     }
   };
   useEffect(() => {

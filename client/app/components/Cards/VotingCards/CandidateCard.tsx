@@ -14,7 +14,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { ErrorMessage } from "@/app/helpers/ErrorMessage";
 import { useParams } from "next/navigation";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { fetchFileFromIPFS } from "@/app/helpers/fetchFileFromIPFS";
 import { unpinJSONFile } from "@/app/helpers/pinToIPFS";
 import CandidateDescription from "../../Fragment/CandidateDescription";

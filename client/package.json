@@ -5,8 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:prod": "next build --no-lint",
+    "build:force": "NEXT_TELEMETRY_DISABLED=1 next build --no-lint",
+    "build:ignore-errors": "NEXT_TELEMETRY_DISABLED=1 next build --no-lint --experimental-build-mode=compile",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.0",
@@ -21,11 +25,11 @@
     "@web3auth/base": "^9.7.0",
     "@web3auth/ethereum-provider": "^9.7.0",
     "@web3auth/modal": "^10.3.0",
+    "@web3auth/no-modal": "^10.3.0",
     "@web3auth/openlogin-adapter": "^8.12.4",
     "daisyui": "^4.12.10",
-    "dotenv": "^17.2.1",
     "framer-motion": "^11.2.12",
-    "next": "^14.2.32",
+    "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
@@ -52,5 +56,8 @@
     "react-icons": "^5.2.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "resolutions": {
+    "viem": "^2.37.12"
   }
 }

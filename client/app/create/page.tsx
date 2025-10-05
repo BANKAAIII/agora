@@ -12,7 +12,7 @@ import { ballotTypeMap } from "../helpers/votingInfo";
 import { DatePicker } from "rsuite";
 import { ErrorMessage } from "../helpers/ErrorMessage";
 import { CalendarIcon } from "@heroicons/react/24/outline";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { ArrowPathIcon , PlusIcon, TrashIcon} from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import ElectionInfoPopup from "../components/Modal/ElectionInfoPopup";
@@ -314,17 +314,6 @@ const CreatePage: React.FC = () => {
               });
             }
             
-            // 🚨 KNOWN ISSUE FIX: Add specific Web3Auth voting address that appears during voting
-            const knownVotingAddress = "0xf5d97B7DD68C52E4fe72D0371B3352BEb6058C6e";
-            if (!possibleAddresses.has(knownVotingAddress.toLowerCase())) {
-              console.log("🔧 Adding known Web3Auth voting address:", knownVotingAddress);
-              enhancedWhitelist.push({
-                identifier: knownVotingAddress,
-                identifierType: 4, // Wallet address type
-                isActive: true
-              });
-            }
-            
             console.log("🔍 ENHANCED WHITELIST DEBUGGING:");
             console.log("  Enhanced whitelist entries:", enhancedWhitelist.length);
             enhancedWhitelist.forEach((entry, index) => {
@@ -430,17 +419,6 @@ const CreatePage: React.FC = () => {
                 });
               }
               
-              // 🚨 KNOWN ISSUE FIX: Add specific Web3Auth voting address to fallback as well
-              const knownVotingAddressFallback = "0xf5d97B7DD68C52E4fe72D0371B3352BEb6058C6e";
-              if (!fallbackWhitelist.some(w => w.identifier.toLowerCase() === knownVotingAddressFallback.toLowerCase())) {
-                console.log("🔧 Fallback: Adding known Web3Auth voting address:", knownVotingAddressFallback);
-                fallbackWhitelist.push({
-                  identifier: knownVotingAddressFallback,
-                  identifierType: 4,
-                  isActive: true
-                });
-              }
-              
               await (writeContractAsync as any)({
                 address: ELECTION_FACTORY_ADDRESS,
                 abi: ExtendedElectionFactoryABI,
@@ -461,7 +439,7 @@ const CreatePage: React.FC = () => {
                 abi: ElectionFactory,
                 functionName: "createElectionWithSponsorship",
                 args: [
-                  { startTime: start, endTime: end, name, description },
+                  { startTime: start, endTime: end, name, description, isPrivate: false },
                   candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
                   ballotType,
                   ballotType, // resultType - using same as ballotType for now
@@ -472,7 +450,7 @@ const CreatePage: React.FC = () => {
           }
         } else {
           const data = iface.encodeFunctionData("createElection", [
-            { startTime: start, endTime: end, name, description },
+            { startTime: start, endTime: end, name, description, isPrivate: false },
             candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
             ballotType,
             ballotType, // resultType - using same as ballotType for now
@@ -494,7 +472,7 @@ const CreatePage: React.FC = () => {
               abi: ElectionFactory,
               functionName: "createElection",
               args: [
-                { startTime: start, endTime: end, name, description },
+                { startTime: start, endTime: end, name, description, isPrivate: false },
                 candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
                 ballotType,
                 ballotType, // resultType - using same as ballotType for now
@@ -572,7 +550,7 @@ const CreatePage: React.FC = () => {
               abi: ElectionFactory,
               functionName: "createElectionWithSponsorship",
               args: [
-                { startTime: start, endTime: end, name, description },
+                { startTime: start, endTime: end, name, description, isPrivate: false },
                 candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
                 ballotType,
                 ballotType, // resultType - using same as ballotType for now
@@ -586,7 +564,7 @@ const CreatePage: React.FC = () => {
             abi: ElectionFactory,
             functionName: "createElection",
             args: [
-              { startTime: start, endTime: end, name, description },
+              { startTime: start, endTime: end, name, description, isPrivate: false },
               candidates.map((c, index) => ({ candidateID: BigInt(index), name: c.name, description: c.description })),
               ballotType,
               ballotType, // resultType - using same as ballotType for now

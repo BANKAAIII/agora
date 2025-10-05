@@ -7,10 +7,11 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import toast from "react-hot-toast";
+
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { Election } from "../../../abi/artifacts/Election";
 import { ErrorMessage } from "../../helpers/ErrorMessage";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { useElectionData } from "@/app/hooks/ElectionInfo";
 import { pinJSONFile } from "@/app/helpers/pinToIPFS";
 
@@ -41,15 +42,7 @@ const AddCandidate = ({
     };
     try {
       const res = await pinJSONFile(jsonBody);
-      if (chain?.id === 43113) {
-        try {
-          await switchChain({ chainId: sepolia.id });
-        } catch (error: any) {
-          console.error("Chain switch error:", error);
-          toast.error(`Failed to switch chain: ${error.message || "Please try again."}`);
-          return;
-        }
-      }
+      if (chain?.id === 43113) switchChain({ chainId: sepolia.id });
       await writeContractAsync({
         address: electionAddress,
         abi: Election,
@@ -58,7 +51,7 @@ const AddCandidate = ({
       });
       toast.success(`${name} Added to Election`);
     } catch (error) {
-      // Error occurred
+      console.log("Error ", error);
       toast.error(ErrorMessage(error));
     }
     setopenModal(false);

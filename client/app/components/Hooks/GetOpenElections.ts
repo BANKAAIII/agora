@@ -1,6 +1,6 @@
 import { ElectionFactory } from "@/abi/artifacts/ElectionFactory";
 import { ELECTION_FACTORY_ADDRESS } from "@/app/constants";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { useReadContract } from "wagmi";
 
 export const useOpenElection = () => {
