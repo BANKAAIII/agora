@@ -256,6 +256,11 @@ export const ElectionFactory = [
             internalType: "string",
             name: "description",
             type: "string"
+          },
+          {
+            internalType: "bool",
+            name: "isPrivate",
+            type: "bool"
           }
         ],
         internalType: "struct Election.ElectionInfo",
@@ -323,6 +328,11 @@ export const ElectionFactory = [
             internalType: "string",
             name: "description",
             type: "string"
+          },
+          {
+            internalType: "bool",
+            name: "isPrivate",
+            type: "bool"
           }
         ],
         internalType: "struct Election.ElectionInfo",
