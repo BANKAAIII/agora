@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { Election } from "../../../abi/artifacts/Election";
 import { ErrorMessage } from "../../helpers/ErrorMessage";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { useElectionData } from "@/app/hooks/ElectionInfo";
 import { pinJSONFile } from "@/app/helpers/pinToIPFS";
 

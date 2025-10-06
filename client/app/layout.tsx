@@ -9,9 +9,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { config, queryClient } from "./helpers/client";
 import Header from "./components/Header/Header";
 import Web3Connect from "./components/Helper/Web3Connect";
-import "rsuite/dist/rsuite-no-reset.min.css";
+import "rsuite/dist/rsuite.min.css";
+import Web3Login from "./components/Helper/Web3Login";
 import { CustomProvider } from "rsuite";
 import ChatBot from "./components/ChatBot/ChatBot";
+import { Web3AuthProvider } from "./context/Web3AuthContext";
+import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -30,13 +33,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider initialChain={sepolia}>
-              <CustomProvider>
-                <Header />
-                <ChatBot />
-                {children}
-              </CustomProvider>
-            </RainbowKitProvider>
+            <Web3AuthProvider>
+              <RainbowKitProvider initialChain={sepolia}>
+                <CustomProvider>
+                  <Header />
+                  <ChatBot />
+                  {children}
+                  <Toaster position="top-right" />
+                </CustomProvider>
+              </RainbowKitProvider>
+            </Web3AuthProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </body>

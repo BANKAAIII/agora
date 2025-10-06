@@ -11,7 +11,7 @@ import {
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/outline";
-import Web3Connect from "../Helper/Web3Connect";
+import Web3Login from "../Helper/Web3Login";
 import Image from "next/image";
 
 const menuItems = [
@@ -77,14 +77,14 @@ const Header = () => {
                 </Link>
               ))}
               <div className="hidden lg:block">
-                <Web3Connect />
+                <Web3Login />
               </div>
             </nav>
 
             {/* Mobile/Tablet Menu Button */}
             <div className="lg:hidden flex items-center space-x-2">
               <div className="scale-90">
-                <Web3Connect />
+                <Web3Login />
               </div>
               <button
                 onClick={toggleSidebar}

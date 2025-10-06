@@ -1,5 +1,5 @@
 import { Election } from "@/abi/artifacts/Election";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { useReadContract } from "wagmi";
 
 export const useMiniElectionInfo = ({

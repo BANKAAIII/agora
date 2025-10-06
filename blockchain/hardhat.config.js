@@ -8,7 +8,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1000, // Improves contract bytecode optimization
+        runs: 200, // Lower runs = smaller bytecode but higher gas costs
       },
     },
   },
@@ -26,6 +26,8 @@ module.exports = {
       allowUnlimitedContractSize: true,
       url: process.env.RPC_URL_SEPOLIA,
       accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 1000000000, // 1 gwei
+      gas: 8000000, // Higher gas limit
     },
     fuji: {
       allowUnlimitedContractSize: true,
@@ -40,12 +42,6 @@ module.exports = {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_KEY,
-  },
-  settings: {
-    optimizer: {
-      enabled: true,
-      runs: 1000,
-    },
   },
   contractSizer: {
     runOnCompile: true,

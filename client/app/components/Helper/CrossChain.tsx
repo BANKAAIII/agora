@@ -2,7 +2,7 @@ import { CCIPSender } from "@/abi/artifacts/CCIPSender";
 import { CCIP_FUJI_ADDRESS, LINK_FUJI } from "@/app/constants";
 import React, { useEffect, useState } from "react";
 import { erc20Abi } from "viem";
-import { avalancheFuji } from "viem/chains";
+import { avalancheFuji } from "@/app/config/chains";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 const CrossChain = ({
   electionAddress,

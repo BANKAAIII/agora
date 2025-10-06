@@ -13,7 +13,7 @@ import { ErrorMessage } from "../../../helpers/ErrorMessage";
 import toast from "react-hot-toast";
 import { Election } from "../../../../abi/artifacts/Election";
 import { useParams } from "next/navigation";
-import { sepolia } from "viem/chains";
+import { sepolia } from "@/app/config/chains";
 import { unpinJSONFile } from "@/app/helpers/pinToIPFS";
 import CandidateDescription from "../../Fragment/CandidateDescription";
 import Vote from "../../Modal/Vote";

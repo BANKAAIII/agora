@@ -1,7 +1,7 @@
 import { CCIPSender } from "@/abi/artifacts/CCIPSender";
 import { Election } from "@/abi/artifacts/Election";
 import { CCIP_FUJI_ADDRESS } from "@/app/constants";
-import { avalancheFuji, sepolia } from "viem/chains";
+import { avalancheFuji, sepolia } from "@/app/config/chains";
 import { useReadContracts } from "wagmi";
 
 export const useElectionInformation = ({
