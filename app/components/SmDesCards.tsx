@@ -10,18 +10,18 @@ const SmDesCards = ({title,subTitle}:DesCardsInterface) => {
   return <motion.div 
            
           
-          className={`w-[430px] h-[260px] rounded-[40px] bg-[#D9D9D9]/35  flex  items-center justify-center mb-10`}
+          className={`w-[340px] h-[200px]  sm:w-[430px] sm:h-[260px] rounded-[40px] bg-[#D9D9D9]/35  flex  items-center justify-center mb-10`}
            
       transition={{ duration: 0.25, ease: "easeOut" }}
           >
-      <motion.div className={`w-[400px] h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[35px] items-center justify-start `}
+      <motion.div className={`flex-wrap m-5 sm:w-[400px] sm:h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-5 sm:p-[35px] items-center justify-start `}
        
         transition={{ duration: 0.25 }}
       >
         {/* title */}
-        <h1 className="font-OpenSans text-[20px] sm:text-[24px] font-medium  mb-[4px]" >{title}</h1>
+        <h1 className="font-OpenSans text-[18px] sm:text-[24px] font-medium  mb-[4px]" >{title}</h1>
         {/* description */}
-        <h1 className="font-OpenSans italic font-light text-[18px] sm:text-[20px] mt-[4px]" >{subTitle}</h1>
+        <h1 className="font-OpenSans italic font-light text-[16px] sm:text-[20px] mt-[4px]" >{subTitle}</h1>
       </motion.div>
     </motion.div>
 }

@@ -20,7 +20,7 @@ const NavBar = ({className,onClick1,onClick2 , open,setOpen}:navBarInterface) =>
       </div>
 
       {/* cotainer : wallet , darkMode */}
-      <div className=" pr-[25px] lg:pr-[50px] gap-x-[5px] md:gap-x-[20px] flex flex-row cursor-pointer" >
+      <div className=" pr-[15px] lg:pr-[50px] gap-x-[5px] md:gap-x-[20px] flex flex-row cursor-pointer" >
        <button onClick={()=>{  }} className="w-[74px] h-[74px] " >
         <Image src={NightMode} alt={""} className="h-[35px] w-[35px] md:h-[36px] md:w-[36px] " />
        </button>

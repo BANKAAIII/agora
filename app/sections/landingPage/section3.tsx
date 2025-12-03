@@ -22,7 +22,7 @@ const Section3 = () => {
             <div className="flex flex-row gap-y-24 items-center justify-start w-full gap-x-8 mt-5 sm:mt-0" >
               
               {/* Card1 */}
-              <div className=" flex flex-col items-center justify-center sm:w-[350px] md:w-[377px] sm:h-[212px]" >
+              <div className=" flex flex-col items-center justify-center  sm:w-[350px] md:w-[377px] sm:h-[212px]" >
                  {/* title */}
                  <div className="flex w-full mt-[19px]" ><h1 className="font-poppins font-regular text-[22px] md:text-[24px]" >Agora Ledger</h1></div>
                  <div className="flex w-full mt-[24px]" ><h1 className="font-poppins font-light text-[16px]  " >Our blockchain infrastructure guarantees end-to-end encryption and immutable records, ensuring no tampering or loss of data.</h1></div>
