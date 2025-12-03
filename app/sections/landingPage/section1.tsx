@@ -124,21 +124,21 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                       variants={outer} initial="initial" animate="show" >
 
             {/* Line 1 */}
-            <motion.div className="flex flex-row gap-4" variants={group} >
-             <motion.div  className="text-[40px] md:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
-             <motion.div  className="text-[40px] md:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
+            <motion.div className="flex flex-row gap-2 sm:gap-4" variants={group} >
+             <motion.div  className="text-[25px] md:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
+             <motion.div  className="text-[25px] md:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
             </motion.div>
 
             {/* Line 2 */}
             <motion.div className=" flex flex-row items-baseline gap-2 sm:mt-1 lg:-mt-2  " 
                         variants={group} >
-             <motion.div className="text-[40px] sm:text-[50px]  md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >Agora</motion.div> 
-             <motion.div className="text-[40px] sm:text-[50px] md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >BlockChain</motion.div>
-             <motion.div className="w-[15px] h-[15px] md:h-[25px] md:w-[25px] rounded-full bg-TitleDot" variants={item} />
+             <motion.div className="text-[30px] sm:text-[50px]  md:text-[88px] font-poppins font-semibold italic sm:mt-[-18px] " variants={item}  >Agora</motion.div> 
+             <motion.div className="text-[30px] sm:text-[50px] md:text-[88px] font-poppins font-semibold italic  sm:mt-[-18px] " variants={item}  >BlockChain</motion.div>
+             <motion.div className="w-[10px] h-[10px] md:h-[25px] md:w-[25px] rounded-full bg-TitleDot" variants={item} />
             </motion.div>
 
             {/* Line 3 */}
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[15px] sm:text-[20px] md:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[12px] sm:text-[20px] md:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
             
             
           </motion.div>
