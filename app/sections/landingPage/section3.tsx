@@ -24,14 +24,14 @@ const Section3 = () => {
               {/* Card1 */}
               <div className=" flex flex-col items-center justify-center  sm:w-[350px] md:w-[377px] sm:h-[212px]" >
                  {/* title */}
-                 <div className="flex w-full mt-[19px]" ><h1 className="font-poppins font-regular text-[22px] md:text-[24px]" >Agora Ledger</h1></div>
-                 <div className="flex w-full mt-[24px]" ><h1 className="font-poppins font-light text-[16px]  " >Our blockchain infrastructure guarantees end-to-end encryption and immutable records, ensuring no tampering or loss of data.</h1></div>
+                 <div className="flex w-full mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px] md:text-[24px]" >Agora Ledger</h1></div>
+                 <div className="flex w-full mt-[24px]" ><h1 className="font-poppins font-light text-[12px] sm:text-[16px]  " >Our blockchain infrastructure guarantees end-to-end encryption and immutable records, ensuring no tampering or loss of data.</h1></div>
               </div>
 
               {/* card2 */}
               <div className=" flex flex-col items-center justify-center  sm:w-[350px] md:w-[377px] h-[212px]" >
-                <div className="w-full mt-[19px]" ><h1 className="font-poppins font-regular text-[22px] md:text-[24px]" >Agora Interface</h1></div>
-                <div className="w-full mt-[24px]" ><h1 className="font-poppins font-light text-[16px] " >A user-friendly platform designed for both voters and election administrators — simple, elegant, and built for scalability.</h1></div>
+                <div className="w-full mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px] md:text-[24px]" >Agora Interface</h1></div>
+                <div className="w-full mt-[24px]" ><h1 className="font-poppins font-light text-[12px] sm:text-[16px] " >A user-friendly platform designed for both voters and election administrators — simple, elegant, and built for scalability.</h1></div>
               </div>
 
             </div>
@@ -40,14 +40,14 @@ const Section3 = () => {
             <div className="flex flex-row gap-y-24 items-center justify-start w-full gap-x-8" >
               {/* card3 */}
               <div className=" flex flex-col items-center justify-center sm:w-[350px] md:w-[377px] h-[212px]" >
-                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[22px] md:text-[24px]" >Agora Community</h1></div>
-                <div className="flex w-full mt-[24px]" > <h1 className="font-poppins font-light text-[16px]" >Join developers, auditors, and civic leaders shaping the future of digital democracy. Your input helps strengthen transparency.</h1></div>
+                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px] md:text-[24px]" >Agora Community</h1></div>
+                <div className="flex w-full mt-[24px]" > <h1 className="font-poppins font-light text-[12px] sm:text-[16px]" >Join developers, auditors, and civic leaders shaping the future of digital democracy. Your input helps strengthen transparency.</h1></div>
              </div>
               
               {/* card4 */}
               <div className=" flex flex-col items-center justify-center sm:w-[350px] md:w-[377px] h-[212px]" >
-                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[22px] md:text-[24px]" >Gsoc</h1></div>
-                <div className="w-full flex mt-[24px]" ><h1 className="font-poppins font-light text-[16px] " >Agora is an openSource gsoc organisation ,which encourages young minds to get hands on exp on projects.</h1></div>
+                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px] md:text-[24px]" >Gsoc</h1></div>
+                <div className="w-full flex mt-[24px]" ><h1 className="font-poppins font-light text-[12px] sm:text-[16px] " >Agora is an openSource gsoc organisation ,which encourages young minds to get hands on exp on projects.</h1></div>
               </div>
             </div>
         

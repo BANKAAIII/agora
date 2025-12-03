@@ -25,7 +25,7 @@ const Footer = () => {
         {/* Email Dark */}   
         <a href="https://gmail.com/ameyawarang203@gmail.com" target='blank'><Image src={emailDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] "/></a>
         {/* x */}
-        <a href="https://x.com/ammmeya" target='blank'><Image src={xDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[30px] md:h-[50px] "/></a>
+        <a href="https://x.com/ammmeya" target='blank'><Image src={xDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] "/></a>
         {/* discord */}
         <a href="https://x.com/ammmeya" target='blank'><Image src={discordDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] "/></a>
       </div>
