@@ -1,15 +1,8 @@
-<div className="grid grid-cols-[2fr_1fr] w-full h-screen flex bg-[#D9D9D9]">
-      <div className="container bg-red-300/20" >
-        {/* top card */}
-        <div className="flex flex-col ml-[56px] mt-[86px]" >
-            <h1 className="font-poppins text-[64px] font-semibold" >Get Started Today.</h1>
-            <h1 className="font-poppins text-[24px] font-medium mt-6 " >Introducing the Agora Voting Protocol™ — our next-generation <br/>framework for secure, verifiable elections.</h1>
-        </div>
-        {/* bottom card */}
-       
-
-      </div>
-      <div className="bg-blue-600/20 flex w-full h-full" >
-      <div className="w-[421px] h-[642px] rounded-[10px] bg-[#FFFFFF] items-center justify-center" ></div>
-      </div>
-    </div>
+<motion.div className="flex w-full h-[66px] mt-[224px] justify-end "  >
+              {/*subContainer*/}
+              <div className="flex flex-row pr-[156px]" >
+                 <NoBorderButton onClick={()=>{}} label={"Learn more"} className={""} />
+                 <BorderButton onClick={()=>{}} label={"Get Started >"} className={" hover:scale-[1.1] duration-75 transition-all"} />
+              </div>
+         
+             </motion.div>
