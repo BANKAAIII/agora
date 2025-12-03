@@ -10,11 +10,11 @@ const SmDesCards = ({title,subTitle}:DesCardsInterface) => {
   return <motion.div 
            
           
-          className={`w-[460px] h-[260px] rounded-[40px] bg-[#D9D9D9]/35  flex  items-center justify-center mb-10`}
+          className={`w-[430px] h-[260px] rounded-[40px] bg-[#D9D9D9]/35  flex  items-center justify-center mb-10`}
            
       transition={{ duration: 0.25, ease: "easeOut" }}
           >
-      <motion.div className={`w-[420px] h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[35px] items-center justify-start `}
+      <motion.div className={`w-[400px] h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[35px] items-center justify-start `}
        
         transition={{ duration: 0.25 }}
       >
