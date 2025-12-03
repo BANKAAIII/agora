@@ -120,30 +120,30 @@ const [activeOption,setActiveOption] =useState("Rainbow");
 
             {/* parent container */} {/* outermost container for animation "Outer" */}
           <motion.div className="  flex flex-col
-                                 sm:pl-[25px] md:pl-[62px] sm:mt-[150px] md:mt-[168px] "
+                                 pl-[25px] md:pl-[62px] mt-[150px] md:mt-[168px] "
                       variants={outer} initial="initial" animate="show" >
 
             {/* Line 1 */}
             <motion.div className="flex flex-row gap-4" variants={group} >
-             <motion.div  className="sm:text-[40px] md:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
-             <motion.div  className="sm:text-[40px] md:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
+             <motion.div  className="text-[40px] md:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
+             <motion.div  className="text-[40px] md:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
             </motion.div>
 
             {/* Line 2 */}
             <motion.div className=" flex flex-row items-baseline gap-2 sm:mt-1 lg:-mt-2  " 
                         variants={group} >
-             <motion.div className="sm:text-[55px] md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >Agora</motion.div> 
-             <motion.div className="text-[55px] md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >BlockChain</motion.div>
-             <motion.div className=" sm:w-[15px] sm:h-[15px] md:h-[25px] md:w-[25px] rounded-full bg-TitleDot" variants={item} />
+             <motion.div className="text-[40px] sm:text-[50px]  md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >Agora</motion.div> 
+             <motion.div className="text-[40px] sm:text-[50px] md:text-[88px] font-poppins font-semibold italic mt-[-18px] " variants={item}  >BlockChain</motion.div>
+             <motion.div className="w-[15px] h-[15px] md:h-[25px] md:w-[25px] rounded-full bg-TitleDot" variants={item} />
             </motion.div>
 
             {/* Line 3 */}
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" sm:text-[20px] md:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[15px] sm:text-[20px] md:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
             
             
           </motion.div>
 
-          <motion.div className="flex w-full h-[66px] sm:mt-[180px] md:mt-[200px] sm:justify-center md:justify-end items-center "  >
+          <motion.div className="flex w-full h-[66px] mt-[140px] sm:mt-[180px] md:mt-[200px] justify-center md:justify-end items-center "  >
               {/*subContainer*/}
               <div className="flex flex-row  md:pr-[156px]" >
                  <NoBorderButton onClick={()=>{}} label={"Learn more"} className={""} />

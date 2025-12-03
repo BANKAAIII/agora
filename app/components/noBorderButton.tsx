@@ -5,7 +5,7 @@ import { noBorderButtonInterface } from '../utils/noBorderButtonInterface'
 import {motion} from "framer-motion"
 
 const NoBorderButton = ({label,onClick,className,initial,animate,transition} : noBorderButtonInterface ) => {
-  return <motion.div className={`group relative cursor-pointer flex sm:text-[20px] md:text-[24px] font-poppins font-extralight italic justify-center items-center w-[223px] h-[64] rounded-full ${className}`} initial={initial} animate={animate} transition={transition}>
+  return <motion.div className={`group relative cursor-pointer flex sm:text-[20px] md:text-[24px] font-poppins font-extralight italic justify-center items-center  w-[180px] h-[50px] md:w-[223px] md:h-[64] rounded-full ${className}`} initial={initial} animate={animate} transition={transition}>
       {label}
       <span className='hidden md:block absolute bottom-0 
           bg-black h-[3px]
