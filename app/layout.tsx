@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Poppins , Open_Sans } from "next/font/google";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "./themeProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -49,11 +50,29 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${openSans.variable} ${inter.variable} `}
-    >
-      <body className="antialiased">{children}</body>
-    </html>
+  <html lang="en">
+  <head>
+    <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch(e) {}
+              })()
+            `,
+          }}
+        />
+
+  </head>
+  <body>
+    <ThemeProvider>{children}</ThemeProvider>
+  </body>
+</html>
   );
 }

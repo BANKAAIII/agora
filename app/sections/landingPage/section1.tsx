@@ -43,12 +43,12 @@ const [activeOption,setActiveOption] =useState("Rainbow");
               transition={{ duration: 0.6, ease: "easeInOut" }}
               className="fixed top-0 left-0 w-full h-screen bg-[#666666] z-40 shadow-xl">
                         
-                        <div className={`flex flex-row items-center justify-between w-full h-[80px] mt-[24px]  pr-[50px] `}>
-                           <div className=" pl-[32px]" >
-                              <Image src={aossie} alt={"loading"} width={74} height={74} />
+                        <div className={`flex flex-row items-center justify-between w-full h-[80px] mt-[24px]  pr-[25px] md:pr-[50px] `}>
+                           <div className="pl-[25px] md:pl-[32px]" >
+                              <Image src={aossie} alt={"loading"} className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px] " />
                             </div>
-                          <button className="w-[74px] h-[74px] bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
-                            <Image src={wallet} alt={""} width={30} height={30} />
+                          <button className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px]  bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
+                            <Image src={wallet} alt={""} className="h-[25px] w-[25px] md:h-[36px] md:w-[36px] " />
                           </button>
                 
                         </div>
@@ -57,11 +57,11 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                           <div className=" ">
 
                            {/* Menu */}
-                           <div className="flex flex-col items-center justify-center mt-[51px] pl-[62px]" >
+                           <div className="flex flex-col items-center justify-start mt-[51px] pl-[62px]" >
                             {/* title */}
-                            <div className="w-full items-start justify-start" ><h1 className="font-poppins text-[48px] italic  text-[#ffffff]" >Connect Wallet</h1></div>
+                            <div className="w-full items-start justify-start" ><h1 className="font-poppins text-[24px] sm:text-[36px] md:text-[48px] italic  text-[#ffffff]" >Wallets :</h1></div>
                             {/* Options */}
-                            <motion.div className="mt-[30px] w-full items-start justify-start font-poppins text-[24px] font-light italic text-[#ffffff] "
+                            <motion.div className="mt-[30px] w-full items-start justify-start font-poppins text-[16px] md:text-[24px] font-light italic text-[#ffffff] "
                                         initial={{opacity:0,y:20}} 
                                         animate={{opacity:1,y:0}}
                                         transition={{duration:0.4,ease:"easeIn",delay:0.6}}>
@@ -69,7 +69,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a>Rainbow</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:394}}
+                                animate={{width:300}}
                                 transition={{duration:0.4,delay:0.6}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>
@@ -78,7 +78,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a >CoinBase</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:394}}
+                                animate={{width:300}}
                                 transition={{duration:0.4,delay:0.64}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]"
                                  />
@@ -87,7 +87,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                               <div className="mt-[20px]" >
                                 <a>MetaMask</a>
                                 <motion.div initial={{width:100}}
-                                animate={{width:394}}
+                                animate={{width:300}}
                                 transition={{duration:0.4,delay:0.64}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>
@@ -96,7 +96,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a>WalletConnect</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:394}}
+                                animate={{width:300}}
                                 transition={{duration:0.4,delay:0.74}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>

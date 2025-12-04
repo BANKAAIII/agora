@@ -41,7 +41,7 @@ const Section3 = () => {
               {/* card3 */}
               <div className=" flex flex-col items-center justify-center sm:w-[350px] md:w-[377px] h-[212px]" >
                 <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px] md:text-[24px]" >Agora Community</h1></div>
-                <div className="flex w-full mt-[24px]" > <h1 className="font-poppins font-light text-[12px] sm:text-[16px]" >Join developers, auditors, and civic leaders shaping the future of digital democracy. Your input helps strengthen transparency.</h1></div>
+                <div className="flex w-full mt-[24px]" > <h1 className="font-poppins font-light text-[11px] sm:text-[16px]" >Join developers, auditors, and civic leaders shaping the future of digital democracy. Your input helps strengthen transparency.</h1></div>
              </div>
               
               {/* card4 */}
