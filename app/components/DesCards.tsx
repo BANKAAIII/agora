@@ -18,7 +18,7 @@ const DesCards = ({title,subTitle}:DesCardsInterface) => {
   
   const [hoverX,setHoverX] = useState(false);
   return <motion.div 
-          className={`w-[417px] h-[545px] rounded-[40px] bg-[#D9D9D9]/35 m-10 flex  items-center justify-center ${hoverX? "hover:bg-TitleDot/35":" bg-[#D9D9D9]/35" }`}
+          className={` min-w-[250px] max-w-[417px] max-h-[525px] min-h-[340px] rounded-[40px] bg-[#D9D9D9]/35  lg:m-10 flex  items-center justify-center ${hoverX? "hover:bg-TitleDot/35":" bg-[#D9D9D9]/35" }`}
            animate={hoverX ? "hover" : "rest"}
       variants={{
         rest: { scale: 1, boxShadow: "0px 0px 0px rgba(0,0,0,0)" },
@@ -26,20 +26,20 @@ const DesCards = ({title,subTitle}:DesCardsInterface) => {
       }}
       transition={{ duration: 0.25, ease: "easeOut" }}
           >
-      <motion.div className={`w-[341px] h-[481px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[35px] items-center justify-center ${hoverX? "hover:bg-TitleDot/50":" bg-[#D9D9D9]/35" } `}
+      <motion.div className={`min-w-[190px] min-h-[300px] max-w-[341px] max-h-[481px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[40px] lg:p-[35px] m-[10px] lg:m-[41px] items-center justify-center ${hoverX? "hover:bg-TitleDot/50":" bg-[#D9D9D9]/35" } `}
         onMouseEnter={()=>setHoverX(true)}
         onMouseLeave={()=>setHoverX(false)}
         animate={hoverX ? "hover" : "rest"}
         variants={{
           rest: { scale: 1 },
-          hover: { scale: 1.05 }
+          hover: { scale: 1.03 }
         }}
         transition={{ duration: 0.25 }}
       >
         {/* title */}
-        <h1 className="font-OpenSans text-[36px] font-medium italic" >{title}</h1>
+        <h1 className=" font-OpenSans text-[18px] lg:text-[36px] font-medium italic mt-[20px] lg:mt-[62px]" >{title}</h1>
         {/* description */}
-        <h1 className="font-OpenSans italic font-light text-[24px] mt-[12px]" >{subTitle}</h1>
+        <h1 className="font-OpenSans italic font-light text-[12px] lg:text-[24px] mt-[12px] mb-[40px] lg:mb-[101px]" >{subTitle}</h1>
       </motion.div>
     </motion.div>
 }
