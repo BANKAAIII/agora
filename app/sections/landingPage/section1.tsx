@@ -69,7 +69,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a>Rainbow</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:300}}
+                                animate={{width:250}}
                                 transition={{duration:0.4,delay:0.6}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>
@@ -78,7 +78,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a >CoinBase</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:300}}
+                                animate={{width:250}}
                                 transition={{duration:0.4,delay:0.64}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]"
                                  />
@@ -87,7 +87,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                               <div className="mt-[20px]" >
                                 <a>MetaMask</a>
                                 <motion.div initial={{width:100}}
-                                animate={{width:300}}
+                                animate={{width:250}}
                                 transition={{duration:0.4,delay:0.64}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>
@@ -96,7 +96,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                 <a>WalletConnect</a>
                                 <motion.div 
                                 initial={{width:100}}
-                                animate={{width:300}}
+                                animate={{width:250}}
                                 transition={{duration:0.4,delay:0.74}}
                                 className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>

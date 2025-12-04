@@ -27,7 +27,7 @@ const NavBar = ({className,onClick1,onClick2 , open,setOpen}:navBarInterface) =>
        <button onClick={ toggleTheme } className="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] " >
         <Image src={NightMode} alt={""} className="h-[25px] w-[25px] sm:h-[35px] sm:w-[35px] md:h-[36px] md:w-[36px] " />
        </button>
-       <button className="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] bg-red-500 dark:bg-amber-300 rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
+       <button className="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
         <Image src={wallet} alt={""} className="h-[25px] w-[25px] md:h-[36px] md:w-[36px] " />
        </button>
       </div>
