@@ -21,7 +21,7 @@ const SmDesCards = ({title,subTitle}:DesCardsInterface) => {
         {/* title */}
         <h1 className="font-OpenSans text-[18px] sm:text-[20px] font-medium mt-[6px]  mb-[4px]" >{title}</h1>
         {/* description */}
-        <h1 className="font-OpenSans italic font-light text-[16px] sm:text-[20px] mt-[4px]" >{subTitle}</h1>
+        <h1 className="font-OpenSans italic font-light text-[15px] sm:text-[20px] mt-[4px]" >{subTitle}</h1>
       </motion.div>
     </motion.div>
 }
