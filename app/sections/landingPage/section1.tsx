@@ -47,7 +47,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                            <div className="pl-[25px] md:pl-[32px]" >
                               <Image src={aossie} alt={"loading"} className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px] " />
                             </div>
-                          <button className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px]  bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
+                          <button className="w-[40px] h-[40px] sm:h-[40px] sm:w-[40px] md:w-[50px] md:h-[50px] xl:h-[74px] xl:w-[74px]  bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
                             <Image src={wallet} alt={""} className="h-[25px] w-[25px] md:h-[36px] md:w-[36px] " />
                           </button>
                 
@@ -120,34 +120,34 @@ const [activeOption,setActiveOption] =useState("Rainbow");
 
             {/* parent container */} {/* outermost container for animation "Outer" */}
           <motion.div className="  flex flex-col
-                                 pl-[25px] md:pl-[30px] lg:pl-[62px] mt-[150px] md:mt-[130px] lg:mt-[168px] "
+                                 pl-[25px] md:pl-[30px] xl:pl-[62px] mt-[150px] md:mt-[130px] xl:mt-[168px] "
                       variants={outer} initial="initial" animate="show" >
 
             {/* Line 1 */}
             <motion.div className="flex flex-row gap-2 sm:gap-4" variants={group} >
-             <motion.div  className="text-[25px] md:text-[50px] lg:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
-             <motion.div  className="text-[25px] md:text-[50px] lg:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
+             <motion.div  className="text-[25px] md:text-[50px] xl:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
+             <motion.div  className="text-[25px] md:text-[50px] xl:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
             </motion.div>
 
             {/* Line 2 */}
             <motion.div className=" flex flex-row items-baseline gap-2 sm:mt-1 lg:-mt-2  " 
                         variants={group} >
 
-             <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] lg:text-[88px] 
+             <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] xl:text-[88px] 
                                     font-poppins font-semibold italic 
                                     sm:mt-[-18px] " variants={item}  >Agora</motion.div> 
 
-             <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] lg:text-[88px] 
+             <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] xl:text-[88px] 
                                     font-poppins font-semibold italic  
                                     sm:mt-[-18px] " variants={item}  >BlockChain</motion.div>
                                     
-             <motion.div className="w-[10px] h-[10px] md:w-[19px] md:h-[19px] lg:h-[25px] lg:w-[25px] 
+             <motion.div className="w-[10px] h-[10px] md:w-[19px] md:h-[19px] xl:h-[25px] xl:w-[25px] 
                                     rounded-full bg-TitleDot" variants={item} />
 
             </motion.div>
 
             {/* Line 3 */}
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[12px] sm:text-[20px] md:text-[19px] lg:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[12px] sm:text-[20px] md:text-[19px] xl:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
             
             
           </motion.div>

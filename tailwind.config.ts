@@ -5,6 +5,7 @@ const config: Config = {
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+       
       fontFamily: {
         poppins: ["var(--font-poppins)"],
       },

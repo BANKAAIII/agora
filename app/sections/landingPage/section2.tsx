@@ -9,17 +9,17 @@ const section2 = () => {
 
       {/* title Card */}
       <div className="w-full  flex" >
-        <div className="pl-[25px] md:pl-[30px] lg:pl-[62px] mt-[15px]" >
+        <div className="pl-[25px] md:pl-[30px] xl:pl-[62px] mt-[15px]" >
 
           {/* Line 1 */}
           <div className="flex flex-row items-baseline gap-3 ">
-            <h1 className="font-OpenSans text-[32px] sm:text-[40px] md:text-[49px] lg:text-[64px] font-light italic text-black/90 " >Start Your</h1>
-            <h1 className="font-poppins text-[32px] sm:text-[40px] md:text-[49px] lg:text-[64px] italic font-semibold text-black/90  " >Journey.</h1>
+            <h1 className="font-OpenSans text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] font-light italic text-black/90 " >Start Your</h1>
+            <h1 className="font-poppins text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] italic font-semibold text-black/90  " >Journey.</h1>
           </div>
 
           {/* Line 2 */}
-          <div className="mt-[5px] md:mt-[14px] lg:mt-[19px]" >
-            <h1 className="font-OpenSans sm-[text-16px] sm:text-[20px] md:text-[19px] lg:text-[24px] italic font-normal" >Choose a new way to vote.<br/> 
+          <div className="mt-[5px] md:mt-[14px] xl:mt-[19px]" >
+            <h1 className="font-OpenSans sm-[text-16px] sm:text-[20px] md:text-[19px] xl:text-[24px] italic font-normal" >Choose a new way to vote.<br/> 
               Your participation and integrity are protected through blockchain <br/> transparency.</h1>
           </div>
 
@@ -27,7 +27,7 @@ const section2 = () => {
       </div>
       
       {/* Carda container */}
-      <div className="hidden md:block w-full md:flex md:flex-row justify-center mt-[50px] pl-[30px] pr-[30px] lg:pl-0 lg:pr-0 gap-[20px] lg:gap-[38px]  mb-[120px] " >
+      <div className="hidden md:block w-full md:flex md:flex-row justify-center mt-[50px] pl-[30px] pr-[30px] xl:pl-0 xl:pr-0 gap-[20px] xl:gap-[38px]  mb-[120px] " >
         <DesCards title={"Be secure."} subTitle={`Cast your vote with confidence. Agora ensures every ballot is securely recorded and verifiable without exposing your identity`}  />
         <DesCards title={"Get connected."} subTitle={`Collaborate with citizens, governments, and organizations worldwide. Build shared trust through open, decentralized technology.`}  />
         <DesCards title={"Get Educated."} subTitle={`Access guides, documentation and real world case studies that show how blockChain can reshape modern elections.`}  />

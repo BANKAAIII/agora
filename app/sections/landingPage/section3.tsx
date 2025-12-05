@@ -53,7 +53,7 @@ const Section3 = () => {
         
               </div>
         {/* subcontainer 2 */}
-        <div className="hidden lg:block w-full h-full" >
+        <div className="hidden xl:block w-full h-full" >
           <div className=" relative z-0 flex w-full h-full flex-row items-center justify-center" >
 
          
