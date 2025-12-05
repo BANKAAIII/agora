@@ -5,7 +5,7 @@ import React from 'react'
 import SmDesCards from '@/app/components/SmDesCards'
 
 const section2 = () => {
-  return<div className="flex flex-col w-full " >
+  return<div className="flex dark:bg-[#2C2C2C] flex-col w-full " >
 
       {/* title Card */}
       <div className="w-full  flex" >
@@ -13,13 +13,13 @@ const section2 = () => {
 
           {/* Line 1 */}
           <div className="flex flex-row items-baseline gap-3 ">
-            <h1 className="font-OpenSans text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] font-light italic text-black/90 " >Start Your</h1>
-            <h1 className="font-poppins text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] italic font-semibold text-black/90  " >Journey.</h1>
+            <h1 className="text-[#000000] dark:text-[#F3F3F3]/90 font-OpenSans text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] font-light italic text-black/90 " >Start Your</h1>
+            <h1 className="text-[#000000] dark:text-[#F3F3F3] font-poppins text-[32px] sm:text-[40px] md:text-[49px] xl:text-[64px] italic font-semibold text-black/90  " >Journey.</h1>
           </div>
 
           {/* Line 2 */}
           <div className="mt-[5px] md:mt-[14px] xl:mt-[19px]" >
-            <h1 className="font-OpenSans sm-[text-16px] sm:text-[20px] md:text-[19px] xl:text-[24px] italic font-normal" >Choose a new way to vote.<br/> 
+            <h1 className="text-[#000000]80 dark:text-[#F3F3F3] font-OpenSans sm-[text-16px] sm:text-[20px] md:text-[19px] xl:text-[24px] italic font-normal" >Choose a new way to vote.<br/> 
               Your participation and integrity are protected through blockchain <br/> transparency.</h1>
           </div>
 

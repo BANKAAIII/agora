@@ -18,7 +18,7 @@ const DesCards = ({title,subTitle}:DesCardsInterface) => {
   
   const [hoverX,setHoverX] = useState(false);
   return <motion.div 
-          className={` min-w-[250px]  max-w-[417px] max-h-[525px] min-h-[340px] rounded-[40px] bg-[#D9D9D9]/35  xl:m-10 flex  items-center justify-center ${hoverX? "hover:bg-TitleDot/35":" bg-[#D9D9D9]/35" }`}
+          className={` min-w-[250px]  max-w-[417px] max-h-[525px] min-h-[340px] rounded-[40px] bg-[#D9D9D9]/35  xl:m-10 flex  items-center justify-center ${hoverX? "hover:bg-TitleDot/35  hover:dark:bg-TitleDot/45":" bg-[#D9D9D9]/35" }`}
            animate={hoverX ? "hover" : "rest"}
       variants={{
         rest: { scale: 1, boxShadow: "0px 0px 0px rgba(0,0,0,0)" },
@@ -26,7 +26,7 @@ const DesCards = ({title,subTitle}:DesCardsInterface) => {
       }}
       transition={{ duration: 0.25, ease: "easeOut" }}
           >
-      <motion.div className={`min-w-[190px] min-h-[300px] max-w-[341px] max-h-[481px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[40px] xl:p-[35px] m-[10px] xl:m-[41px] items-center justify-center ${hoverX? "hover:bg-TitleDot/50":" bg-[#D9D9D9]/35" } `}
+      <motion.div className={`min-w-[190px] min-h-[300px] max-w-[341px] max-h-[481px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-[40px] xl:p-[35px] m-[10px] xl:m-[41px] items-center justify-center ${hoverX? "hover:bg-TitleDot/50 hover:dark:bg-TitleDot/70":" bg-[#D9D9D9]/35 " } `}
         onMouseEnter={()=>setHoverX(true)}
         onMouseLeave={()=>setHoverX(false)}
         animate={hoverX ? "hover" : "rest"}

@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@plugin "tailwindcss-animate";
+
+
+@custom-variant dark (&:is(.dark *));
+
 .font-poppins {
   font-family: var(--font-poppins);
 }
@@ -13,5 +18,5 @@
 }
 
 @theme inline{
-    --color-TitleDot : #FEE15F;
+   --color-TitleDot : #FEE15F;
 }

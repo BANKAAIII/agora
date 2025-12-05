@@ -29,7 +29,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
 
 
   const [open,setOpen] = useState(false);
-  return <div className="relative z-0 flex flex-col w-full min-h-screen ">      
+  return <div className="relative z-0 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
           
           <NavBar className={"mt-[24px]"} open={open} setOpen={setOpen} />
 
@@ -125,8 +125,8 @@ const [activeOption,setActiveOption] =useState("Rainbow");
 
             {/* Line 1 */}
             <motion.div className="flex flex-row gap-2 sm:gap-4" variants={group} >
-             <motion.div  className="text-[25px] md:text-[50px] xl:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
-             <motion.div  className="text-[25px] md:text-[50px] xl:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
+             <motion.div  className="text-[#000000] dark:text-[#F3F3F3]/80 text-[25px] md:text-[50px] xl:text-[80px] font-poppins font-light tracking-tight" variants={item}  >Welcome</motion.div>
+             <motion.div  className="text-[#000000] dark:text-[#F3F3F3]/80 text-[25px] md:text-[50px] xl:text-[80px] font-poppins  font-light tracking-tight" variants={item} >to</motion.div>
             </motion.div>
 
             {/* Line 2 */}
@@ -134,11 +134,11 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                         variants={group} >
 
              <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] xl:text-[88px] 
-                                    font-poppins font-semibold italic 
+                                    font-poppins font-semibold italic text-[#000000] dark:text-[#F3F3F3]
                                     sm:mt-[-18px] " variants={item}  >Agora</motion.div> 
 
              <motion.div className="text-[30px] sm:text-[50px] md:text-[67px] xl:text-[88px] 
-                                    font-poppins font-semibold italic  
+                                    font-poppins font-semibold italic  text-[#000000] dark:text-[#F3F3F3]
                                     sm:mt-[-18px] " variants={item}  >BlockChain</motion.div>
                                     
              <motion.div className="w-[10px] h-[10px] md:w-[19px] md:h-[19px] xl:h-[25px] xl:w-[25px] 
@@ -147,7 +147,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
             </motion.div>
 
             {/* Line 3 */}
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[12px] sm:text-[20px] md:text-[19px] xl:text-[24px] font-poppins font-extralight italic" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, ease:easeIn}} className=" text-[12px] sm:text-[20px] md:text-[19px] xl:text-[24px] font-poppins font-extralight italic text-[#000000] dark:text-[#F3F3F3]/88" >With blockchain as its foundation,<br/> Agora ensures that every voice is heard and every vote counts</motion.div>
             
             
           </motion.div>
