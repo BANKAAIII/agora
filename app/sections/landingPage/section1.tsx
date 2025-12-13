@@ -10,6 +10,8 @@ import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import wallet from "../../public/wallet.png"
 import aossie from "../../public/aossie.png";
+import Introduction from '../walletsSections/introduction'
+import { useRouter } from 'next/navigation';
 
 const outer = {
   initial:{opacity:0},
@@ -24,6 +26,7 @@ const group ={
 const item = { initial: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 const Section1 = () => {
+  const router = useRouter();
 
 const [activeOption,setActiveOption] =useState("Rainbow");
 
@@ -109,7 +112,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
 
                           {/* Wallet Connection */}
                           <div className=' flex flex-col items-center justify-center ' >
-                            
+                            <Introduction/>
                           </div>
                         </div>
 
@@ -156,7 +159,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
               {/*subContainer*/}
               <div className="flex flex-row pb-20 md:pr-[100px] lg:pr-[156px]" >
                  <NoBorderButton onClick={()=>{}} label={"Learn more"} className={""} />
-                 <BorderButton onClick={()=>{}} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
+                 <BorderButton onClick={()=>router.push("/signup")} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
               </div>
          
           </motion.div>

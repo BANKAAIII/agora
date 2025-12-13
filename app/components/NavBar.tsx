@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { navBarInterface } from '../utils/NavBarInterface';
 import aossie from "../public/aossie.png";
 import NightMode from "../public/night-mode.png";
@@ -8,24 +8,38 @@ import wallet from "../public/wallet.png";
 import Image from 'next/image';
 import { useTheme } from '../themeProvider';
 import { Toggle } from "./toggle"// <-- shadcn toggle
+import { usePathname } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 
-const NavBar = ({ className, onClick1, onClick2, open, setOpen }: navBarInterface) => {
+const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBarInterface) => {
   const { toggleTheme } = useTheme();
 
-  return (
-    <div className={`flex flex-row items-center justify-between w-full h-[80px] ${className} `}>
+    
+   const pathName2="http://localhost:3000/dashboard"
+    
+  const drawer = pathName2.includes("/dashboard");
+  
 
-      {/* logo */}
-      <div className="pl-[25px] md:pl-[25px] xl:pl-[32px]">
+  return (
+    <div className={`relative z-10 flex flex-row items-center justify-between w-full h-[80px] ${className} `}>
+
+     {/* left buttons */}
+      <div className="flex items-center justify-center">
+         {/* logo */}
+         <div className="pl-[25px] md:pl-[25px] xl:pl-[32px] ">
         <Image
           src={aossie}
           alt="loading"
           className="w-[40px] h-[40px] sm:h-[50px] sm:w-[50px] xl:h-[74px] xl:w-[74px]"
         />
       </div>
+    
+      </div>
+      
 
       {/* container : wallet , darkMode */}
-      <div className="pr-[15px] md:pr-[30px] lg:pr-[50px] gap-x-[5px] md:gap-x-[20px] flex flex-row">
+      <div></div>
+      <div className="pr-[15px] md:pr-[25px] lg:pr-[32px] gap-x-[5px] md:gap-x-[20px] flex flex-row">
 
         {/* 🔥 shadcn toggle for theme */}
         <Toggle

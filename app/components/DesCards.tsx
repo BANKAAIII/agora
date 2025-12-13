@@ -37,9 +37,9 @@ const DesCards = ({title,subTitle}:DesCardsInterface) => {
         transition={{ duration: 0.25 }}
       >
         {/* title */}
-        <h1 className=" font-OpenSans text-[18px] xl:text-[36px] font-medium italic mt-[20px] xl:mt-[62px]" >{title}</h1>
+        <h1 className=" font-OpenSans text-[18px] xl:text-[34px] font-medium italic mt-[20px] xl:mt-[62px]" >{title}</h1>
         {/* description */}
-        <h1 className="font-OpenSans italic font-light text-[12px] xl:text-[24px] mt-[12px] mb-[40px] xl:mb-[101px]" >{subTitle}</h1>
+        <h1 className="font-OpenSans italic font-light text-[12px] xl:text-[22px] mt-[12px] mb-[40px] xl:mb-[101px]" >{subTitle}</h1>
       </motion.div>
     </motion.div>
 }

@@ -1,8 +1,11 @@
-<motion.div className="flex w-full h-[66px] mt-[224px] justify-end "  >
-              {/*subContainer*/}
-              <div className="flex flex-row pr-[156px]" >
-                 <NoBorderButton onClick={()=>{}} label={"Learn more"} className={""} />
-                 <BorderButton onClick={()=>{}} label={"Get Started >"} className={" hover:scale-[1.1] duration-75 transition-all"} />
-              </div>
-         
-             </motion.div>
+<div className="flex flex-col items-center justify-start overflow-hidden" >
+        <a className=" w-[300px] font-poppins font-normal italic text-[16px] ">{description}</a>
+        <a className="font-poppins font-bold italic text-[40px]" >Hosted Election's</a>
+     </div>
+      <div className="flex w-full items-center justify-between p-[24px]" >
+        
+        <Image src={send} alt="" className="w-[35px] h-[35px]" />
+      </div>
+      <div className="flex w-full flex-row items-center p-[24px] justify-start" >
+        <a className="font-poppins font-bold italic text-[40px]" >Hosted Election's</a>
+      </div>

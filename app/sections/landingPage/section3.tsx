@@ -46,7 +46,7 @@ const Section3 = () => {
               
               {/* card4 */}
               <div className=" flex p-2 flex-col items-center justify-center sm:w-[350px] md:w-[377px] h-[212px]" >
-                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px]  md:text-[19px] lg:text-[24px]text-[#000000] dark:text-[#F3F3F3]" >Gsoc</h1></div>
+                <div className="w-full flex mt-[19px]" ><h1 className="font-poppins font-regular text-[18px] sm:text-[22px]  md:text-[19px] lg:text-[24px] text-[#000000] dark:text-[#F3F3F3]" >Gsoc</h1></div>
                 <div className="w-full flex mt-[24px]" ><h1 className="font-poppins font-light text-[12px] sm:text-[16px]  text-[#000000] dark:text-[#ADADAD]" >Agora is an openSource gsoc organisation ,which encourages young minds to get hands on exp on projects.</h1></div>
               </div>
             </div>

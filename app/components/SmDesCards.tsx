@@ -14,14 +14,14 @@ const SmDesCards = ({title,subTitle}:DesCardsInterface) => {
            
       transition={{ duration: 0.25, ease: "easeOut" }}
           >
-      <motion.div className={`flex-wrap pt-5 sm:pt-0 m-2  sm:w-[400px] sm:h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-5 sm:p-[35px] items-center justify-start `}
+      <motion.div className={`flex-wrap pt-3 sm:pt-0 m-2  sm:w-[400px] sm:h-[200px] rounded-[32px] bg-[#d9d9d9]/60 flex flex-col p-4 sm:p-[35px] items-center justify-start `}
        
         transition={{ duration: 0.25 }}
       >
         {/* title */}
-        <h1 className="font-OpenSans text-[18px] sm:text-[20px] font-medium mt-[6px]  mb-[4px]" >{title}</h1>
+        <h1 className="font-OpenSans text-[16px] sm:text-[18px] font-medium mt-[4px]  mb-[4px]" >{title}</h1>
         {/* description */}
-        <h1 className="font-OpenSans italic font-light text-[15px] sm:text-[20px] mt-[4px]" >{subTitle}</h1>
+        <h1 className="font-OpenSans italic font-light text-[12px] sm:text-[20px] mt-[2px]" >{subTitle}</h1>
       </motion.div>
     </motion.div>
 }
