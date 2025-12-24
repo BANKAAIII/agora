@@ -12,9 +12,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   
   webpack: (config, { isServer }) => {
     // Fix Web3Auth dependency issues
@@ -58,10 +56,7 @@ const nextConfig = {
     ];
   },
 
-  // Suppress warnings for React Native dependencies
-  experimental: {
-    esmExternals: "loose",
-  },
+ turbopack:{}
 };
 
 export default nextConfig;

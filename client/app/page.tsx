@@ -1,10 +1,18 @@
-"use client";
-import HomePage from "./components/Pages/HomePage";
+import React from 'react'
+import Section1 from './NSections/landingPage/section1'
+import Section2 from './NSections/landingPage/section2'
+import Section3 from './NSections/landingPage/section3'
+import Footer from './NComponents/footer'
 
-export default function Home() {
+const page = () => {
   return (
-    <main className="flex min-h-screen w-screen flex-col items-center justify-between overflow-hidden">
-      <HomePage />
-    </main>
-  );
+    <div>
+      <Section1/>
+      <Section2/>
+      <Section3/>
+      <Footer/>
+    </div>
+  )
 }
+
+export default page
