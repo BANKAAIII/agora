@@ -2,8 +2,6 @@
 
 import React, { useEffect } from 'react'
 import { navBarInterface } from '../utils/NavBarInterface';
-import aossie from "../public/aossie.png";
-import NightMode from "../public/night-mode.png";
 import wallet from "../public/wallet.png";
 import Image from 'next/image';
 import { useTheme } from '../themeProvider';
@@ -28,7 +26,9 @@ const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBa
          {/* logo */}
          <div className="pl-[25px] md:pl-[25px] xl:pl-[32px] ">
         <Image
-          src={aossie}
+          src={"/aossie.png"}
+          width={76} height={76}
+      
           alt="loading"
           className="w-[40px] h-[40px] sm:h-[50px] sm:w-[50px] xl:h-[74px] xl:w-[74px]"
         />
@@ -47,7 +47,8 @@ const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBa
           className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] xl:w-[60px] xl:h-[60px] flex items-center justify-center"
         >
           <Image
-            src={NightMode}
+          width={20} height={20}
+            src={"/night-mode.png"}
             alt="dark mode"
             className="dark:invert  h-[25px] w-[25px] sm:h-[35px] sm:w-[35px] md:w-[30px] md:h-[30px] xl:h-[36px] xl:w-[36px]"
           />
@@ -59,7 +60,8 @@ const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBa
           onClick={() => setOpen(!open)}
         >
           <Image
-            src={wallet}
+          width={20} height={20}
+            src={"/wallet.png"}
             alt="wallet"
             className=" w-[25px] md:h-[25px] md:w-[25px] xl:h-[36px] xl:w-[36px]"
           />

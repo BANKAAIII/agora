@@ -56,8 +56,10 @@ const NavBar2 = ({ className, onClick1, onClick2, open, setOpen,pathName }: navB
           onClick={() => setOpen(!open)}
         >
           <Image
-            src={wallet}
+            src={"/wallet.png"}
             alt="wallet"
+            width={40}
+            height={40}
             className=" w-[25px] md:h-[25px] md:w-[25px] xl:h-[36px] xl:w-[36px]"
           />
         </button>

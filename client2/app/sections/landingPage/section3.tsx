@@ -2,9 +2,10 @@
 
 import Sprinkler from '@/app/components/confetti'
 import React from 'react'
+import Carousel from '../../components/imageCarousel'
 
 const Section3 = () => {
-  return<div className=" max-h-full  max-h-screen flex bg-[#D9D9D9] dark:bg-[#2C2C2C] items-center justify-center">
+  return<div id="section3" className="scroll-mt-[80px] flex bg-[#D9D9D9] dark:bg-[#2C2C2C] items-center justify-center">
 
       {/* parent container */}
       <div className="m-[25px] lg:m-[81px] sm:w-[600px] md:w-[1600px] h-[700px] flex flex-row items-center justify-center gap-[50px] overflow-hidden" >
@@ -59,7 +60,9 @@ const Section3 = () => {
          
         <Sprinkler count={60} />
      
-          <div className="absolute z-30 w-[421px] h-[642px] rounded-[10px] bg-[#ffffff]" ></div>
+          <div className="absolute z-30 w-[421px] h-[642px] rounded-[10px] bg-[#ffffff] flex items-center justify-center" >
+            <Carousel/>
+          </div>
         </div> 
         </div>
         

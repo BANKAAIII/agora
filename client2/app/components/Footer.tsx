@@ -21,13 +21,13 @@ const Footer = () => {
       {/* social Media Handles */}
       <div className="flex items-center justify-center lg:justify-end gap-6 lg:mr-[32px] " >
         {/* Github */}
-        <a href="https://github.com/BANKAAIII" target='blank'><Image src={githubDark} alt="loading" className=" w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
+        <a href="https://github.com/BANKAAIII" target='blank'><Image src={"/githubDark.png"} alt="loading" width={20} height={20} className=" w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
         {/* Email Dark */}   
-        <a href="https://gmail.com/ameyawarang203@gmail.com" target='blank'><Image src={emailDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
+        <a href="https://gmail.com/ameyawarang203@gmail.com" target='blank'><Image src={"/emailLight.png"} width={20} height={20} alt="loading" className="invert dark:invert-0 w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
         {/* x */}
-        <a href="https://x.com/ammmeya" target='blank'><Image src={xDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
+        <a href="https://x.com/ammmeya" target='blank'><Image src={"/xDark.png"} alt="loading" width={20} height={20} className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
         {/* discord */}
-        <a href="https://x.com/ammmeya" target='blank'><Image src={discordDark} alt="loading" className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
+        <a href="https://x.com/ammmeya" target='blank'><Image src={"/discordDark.png"} alt="loading" width={20} height={20} className="w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[35px] md:h-[35px] xl:w-[50px] xl:h-[50px] "/></a>
       </div>
     </div>
   )

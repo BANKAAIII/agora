@@ -8,10 +8,18 @@ import {easeIn, easeOut, motion} from "framer-motion";
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import wallet from "../../public/wallet.png"
-import aossie from "../../public/aossie.png";
 import Introduction from '../walletsSections/introduction'
 import { useRouter } from 'next/navigation';
+import { CLIENT_LINKS } from '@/config/clientLinks';
+import{ useScrollStore} from '@/app/zustandStore/landingPageStores'
+import Rainbow from '../walletsSections/rainbow'
+import Coinbase from '../walletsSections/coinbase'
+import Metamask from '../walletsSections/metamask'
+import WalletConnect from '../walletsSections/walletconnect'
+
+type Section1Props = {
+  scrollToSection: (id: string) => void;
+}
 
 const outer = {
   initial:{opacity:0},
@@ -25,14 +33,16 @@ const group ={
 
 const item = { initial: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
-const Section1 = () => {
+const Section1 = ( { scrollToSection }: Section1Props ) => {
   const router = useRouter();
 
 const [activeOption,setActiveOption] =useState("Rainbow");
-
+ const [ walletMiniPage, setWalletMiniPage ] = useState< "rainbow" | "coinBase" | "metaMask" | "walletConnect" | null >(null);
 
   const [open,setOpen] = useState(false);
-  return <div className="relative z-0 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
+
+
+  return <div id="section1" className="relative z-10 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
           
           <NavBar className={"mt-[24px]"} open={open} setOpen={setOpen} />
 
@@ -44,20 +54,32 @@ const [activeOption,setActiveOption] =useState("Rainbow");
               animate={{ y: "0%", opacity: 1 }}     // slide down + fade in
               exit={{ y: "-100%", opacity: 0 }}      // slide up + fade out
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="fixed top-0 left-0 w-full h-screen bg-[#666666] z-40 shadow-xl">
+              className="fixed top-0 left-0 w-full h-screen bg-[#666666] z-50 shadow-xl">
                         
-                        <div className={`flex flex-row items-center justify-between w-full h-[80px] mt-[24px]  pr-[25px] md:pr-[50px] `}>
+                        <div className={`flex flex-row items-center justify-between w-full h-[80px] mt-[24px]  pr-[32px] `}>
                            <div className="pl-[25px] md:pl-[32px]" >
-                              <Image src={aossie} alt={"loading"} className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px] " />
+                              <Image width={74} height={74} src={"/aossie.png"} alt={"loading"} className="w-[40px] h-[40px] sm:h-[60px] sm:w-[60px] md:h-[74px] md:w-[74px] " />
                             </div>
-                          <button className="w-[40px] h-[40px] sm:h-[40px] sm:w-[40px] md:w-[50px] md:h-[50px] xl:h-[74px] xl:w-[74px]  bg-[#F4F4F4] rounded-[15px]  flex items-center justify-center cursor-pointer" onClick={()=>setOpen(!open)} >
-                            <Image src={wallet} alt={""} className="h-[25px] w-[25px] md:h-[36px] md:w-[36px] " />
-                          </button>
+                            <div className="flex flex-row items-center justify-center" >
+                              
+                              <button
+                                    className="  h-[25px] w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] xl:w-[60px] xl:h-[60px] bg-[#F4F4F4]  rounded-[15px] flex items-center justify-center"
+                                    onClick={() => setOpen(!open)}
+                                  >
+                                    <Image
+                                    width={20} height={20}
+                                      src={"/wallet.png"}
+                                      alt="wallet"
+                                      className=" w-[25px] md:h-[25px] md:w-[25px] xl:h-[36px] xl:w-[36px]"
+                                    />
+                                  </button>
+                            </div>
+                          
                 
                         </div>
                         {/* main container */}
-                        <div className="w-full h-[811px] grid grid-cols-[1fr_2fr]" >
-                          <div className=" ">
+                        <div className="w-full h-[811px] grid grid-cols-[1fr_4fr]" >
+                          <div className="">
 
                            {/* Menu */}
                            <div className="flex flex-col items-center justify-start mt-[51px] pl-[62px]" >
@@ -68,16 +90,31 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                         initial={{opacity:0,y:20}} 
                                         animate={{opacity:1,y:0}}
                                         transition={{duration:0.4,ease:"easeIn",delay:0.6}}>
-                              <div className="mt-[20px]">
+                              
+                              
+                              {/* Rainbow miniPage */}
+                              <div className="mt-[20px]" 
+                                   onMouseEnter={ ()=>{
+                                  setWalletMiniPage("rainbow");
+                                  } }
+                              >
                                 <a>Rainbow</a>
                                 <motion.div 
                                 initial={{width:100}}
                                 animate={{width:250}}
                                 transition={{duration:0.4,delay:0.6}}
-                                className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
+                                className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]"
+                                />
+                                
                               </div>
 
-                              <div className="mt-[20px]" >
+
+                                {/* coinBase miniPage */}
+                              <div className="mt-[20px]" 
+                                  onMouseEnter={ ()=>{
+                                  setWalletMiniPage("coinBase");
+                                  
+                                } }>
                                 <a >CoinBase</a>
                                 <motion.div 
                                 initial={{width:100}}
@@ -87,21 +124,30 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                                  />
                               </div>
 
-                              <div className="mt-[20px]" >
-                                <a>MetaMask</a>
-                                <motion.div initial={{width:100}}
-                                animate={{width:250}}
-                                transition={{duration:0.4,delay:0.64}}
-                                className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
+                                {/* metaMask miniPage */}
+                              <div className="mt-[20px]"  
+                                  onMouseEnter={ ()=>{
+                                    setWalletMiniPage("metaMask");
+                                    
+                                  } } >
+                                  <a>MetaMask</a>
+                                  <motion.div initial={{width:100}}
+                                  animate={{width:250}}
+                                  transition={{duration:0.4,delay:0.64}}
+                                  className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
                               </div>
 
-                              <div className="mt-[20px]" >
+                              <div className="mt-[20px]"
+                                 onMouseEnter={ ()=>{
+                                  setWalletMiniPage("walletConnect");
+                                } } >
                                 <a>WalletConnect</a>
                                 <motion.div 
                                 initial={{width:100}}
                                 animate={{width:250}}
                                 transition={{duration:0.4,delay:0.74}}
-                                className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]" />
+                                className="w-[394px] h-[2px] mt-[6px] bg-[#ffffff]"
+                                />
                               </div>
 
                             </motion.div>
@@ -111,8 +157,12 @@ const [activeOption,setActiveOption] =useState("Rainbow");
                           </div>
 
                           {/* Wallet Connection */}
-                          <div className=' flex flex-col items-center justify-center ' >
-                            <Introduction/>
+                          <div className=' flex flex-col w-full h-full items-center justify-center ' >
+                            { walletMiniPage === null && <Introduction/> }
+                            { walletMiniPage === "rainbow" && <div className="flex w-full h-full p-10" > <Rainbow/> </div> }
+                            { walletMiniPage === "coinBase" && <div className="flex w-full h-full p-10" > <Coinbase/> </div> }
+                            { walletMiniPage === "metaMask" && <div className="flex w-full h-full p-10" > <Metamask/> </div> }
+                            { walletMiniPage === "walletConnect" && <div className="flex w-full h-full p-10" > <WalletConnect/> </div> }
                           </div>
                         </div>
 
@@ -158,8 +208,9 @@ const [activeOption,setActiveOption] =useState("Rainbow");
           <motion.div className="flex w-full h-[66px] mt-[140px] sm:mt-[180px] md:mt-[200px] justify-center md:justify-end items-center "  >
               {/*subContainer*/}
               <div className="flex flex-row pb-20 md:pr-[100px] lg:pr-[156px]" >
-                 <NoBorderButton onClick={()=>{}} label={"Learn more"} className={""} />
-                 <BorderButton onClick={()=>router.push("/signup")} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
+                 <NoBorderButton onClick={()=> {
+    scrollToSection("section3")}} label={"Learn more"} className={""} />
+                 <BorderButton onClick={()=>window.location.href = CLIENT_LINKS.APP_ROOT} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
               </div>
          
           </motion.div>
