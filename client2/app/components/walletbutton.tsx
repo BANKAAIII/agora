@@ -2,7 +2,6 @@
 import React from 'react'
 import { walletCardInterface } from '../utils/walletCardInterface'
 import Image from 'next/image'
-import cross  from "../public/cross.png";
 
 const wallets = [{
     name:"Phantom" , walletColor:"bg-[##ab9ff2]"
@@ -18,7 +17,7 @@ const Walletbutton = ({walletColor , name , onClick} :walletCardInterface) => {
         <div className={`w-[22px] h-[22px] rounded-full ${walletColor}`} ></div>  
         <a className="font-poppins text-[22px] font-medium italic pl-[11px] pr-[68px]" >{name}</a>      
         <button onClick={()=>{}} >
-            <Image src={cross} alt={"loading"} className="w-[20px] h-[20px]" />
+            <Image src={"/cross.png"} alt={"loading"} className="w-[20px] h-[20px]" />
         </button>
     </div>
 }

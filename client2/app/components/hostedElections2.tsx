@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { hostedElectionInterface } from '../utils/hostedElectionInterface'
-import Image from 'next/image'
-import send from "../public/send.png";
 import MiniCards from './miniCards';
 
 const HostedElections2 = ({width,height,title,description}:hostedElectionInterface) => {
