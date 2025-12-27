@@ -16,9 +16,10 @@ import Rainbow from '../walletsSections/rainbow'
 import Coinbase from '../walletsSections/coinbase'
 import Metamask from '../walletsSections/metamask'
 import WalletConnect from '../walletsSections/walletconnect'
+import {useEffect} from 'react';
 
 type Section1Props = {
-  scrollToSection: (id: string) => void;
+  scrollToSection:() => void;
 }
 
 const outer = {
@@ -40,9 +41,13 @@ const [activeOption,setActiveOption] =useState("Rainbow");
  const [ walletMiniPage, setWalletMiniPage ] = useState< "rainbow" | "coinBase" | "metaMask" | "walletConnect" | null >(null);
 
   const [open,setOpen] = useState(false);
+  useEffect(() => {
+  console.log("scrollHeight:", document.documentElement.scrollHeight);
+  console.log("innerHeight:", window.innerHeight);
+}, []);
 
 
-  return <div id="section1" className="relative z-10 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
+  return <div  className="relative z-10 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
           
           <NavBar className={"mt-[24px]"} open={open} setOpen={setOpen} />
 
@@ -208,8 +213,7 @@ const [activeOption,setActiveOption] =useState("Rainbow");
           <motion.div className="flex w-full h-[66px] mt-[140px] sm:mt-[180px] md:mt-[200px] justify-center md:justify-end items-center "  >
               {/*subContainer*/}
               <div className="flex flex-row pb-20 md:pr-[100px] lg:pr-[156px]" >
-                 <NoBorderButton onClick={()=> {
-    scrollToSection("section3")}} label={"Learn more"} className={""} />
+                 <NoBorderButton onClick={scrollToSection} label={"Learn more"} className={""} />
                  <BorderButton onClick={()=>window.location.href = CLIENT_LINKS.APP_ROOT} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
               </div>
          

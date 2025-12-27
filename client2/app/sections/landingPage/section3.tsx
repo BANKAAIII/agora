@@ -5,7 +5,7 @@ import React from 'react'
 import Carousel from '../../components/imageCarousel'
 
 const Section3 = () => {
-  return<div id="section3" className="scroll-mt-[80px] flex bg-[#D9D9D9] dark:bg-[#2C2C2C] items-center justify-center">
+  return<div  className="scroll-mt-[80px] flex bg-[#D9D9D9] dark:bg-[#2C2C2C] items-center justify-center overflow-hidden " >
 
       {/* parent container */}
       <div className="m-[25px] lg:m-[81px] sm:w-[600px] md:w-[1600px] h-[700px] flex flex-row items-center justify-center gap-[50px] overflow-hidden" >

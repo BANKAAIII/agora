@@ -33,7 +33,7 @@ const containerChildren ={
 
 const section2 = () => {
 
-  return<div id="section2" className="flex dark:bg-[#2C2C2C] flex-col w-full " >
+  return<div className="flex dark:bg-[#2C2C2C] flex-col w-full " >
 
       {/* title Card */}
       <div className="w-full  flex" >
