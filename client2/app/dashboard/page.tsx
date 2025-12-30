@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import NavBar2 from '../components/NavBar2'
+import NavBar2 from '../components/navbar2'
 import { usePathname } from 'next/navigation'
 import WalletsCard from '../components/walletsCard';
 import { walletCardInterface } from '../utils/walletCardInterface';

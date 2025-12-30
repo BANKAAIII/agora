@@ -4,7 +4,7 @@ import React from 'react'
 import NavBar from '@/app/components/NavBar'
 import BorderButton from '@/app/components/BorderButton'
 import NoBorderButton from '@/app/components/noBorderButton'
-import {easeIn, easeOut, motion} from "framer-motion";
+import {delay, easeIn, easeOut, motion, scale} from "framer-motion";
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -22,6 +22,35 @@ type Section1Props = {
   scrollToSection:() => void;
 }
 
+// learnMore button animation variants
+const learnMoreVariants = {
+  initial: {
+    opacity: 0,
+    y: 40,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: easeIn,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+   
+    transition: {
+      delay:0.3,
+      duration: 0.3,
+      ease: easeOut,
+    },
+  },
+};
+
+
+
 const outer = {
   initial:{opacity:0},
   show : {opacity:1 , transition :{ staggerChildren:0.3  , ease:easeOut }}
@@ -37,14 +66,30 @@ const item = { initial: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const Section1 = ( { scrollToSection }: Section1Props ) => {
   const router = useRouter();
 
+const [animateDiv,setAnimateDiv] = useState(0);
+const [showLearnMore, setShowLearnMore] = useState(false);
+
+
+function hoveringDiv(){
+    
+    setShowLearnMore(true);
+}
+
 const [activeOption,setActiveOption] =useState("Rainbow");
  const [ walletMiniPage, setWalletMiniPage ] = useState< "rainbow" | "coinBase" | "metaMask" | "walletConnect" | null >(null);
 
   const [open,setOpen] = useState(false);
-  useEffect(() => {
-  console.log("scrollHeight:", document.documentElement.scrollHeight);
-  console.log("innerHeight:", window.innerHeight);
-}, []);
+
+useEffect(() => {
+  if (!showLearnMore) return;
+
+  const timer = setTimeout(() => {
+    setShowLearnMore(false);
+  }, 2500); // visible duration
+
+  return () => clearTimeout(timer);
+}, [showLearnMore]);
+
 
 
   return <div  className="relative z-10 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
@@ -177,7 +222,8 @@ const [activeOption,setActiveOption] =useState("Rainbow");
             </AnimatePresence>
 
             {/* parent container */} {/* outermost container for animation "Outer" */}
-          <motion.div className="  flex flex-col
+            <div className="grid grid-cols-[5fr_3fr] w-full " >
+             <motion.div className="  flex flex-col
                                  pl-[25px] md:pl-[30px] xl:pl-[62px] mt-[150px] md:mt-[130px] xl:mt-[168px] "
                       variants={outer} initial="initial" animate="show" >
 
@@ -209,11 +255,36 @@ const [activeOption,setActiveOption] =useState("Rainbow");
             
             
           </motion.div>
+          <div className="flex w-full  items-center justify-center" >
+          <AnimatePresence>
+  {showLearnMore && (
+    <motion.div
+      variants={learnMoreVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="flex w-[70%] h-[70%] mt-[40%] bg-[#D9D9D9]/35 shadow-2xl rounded-[40px]"
+    >
+      <p className="p-6 flex items-center justify-center flex-col">
+        <a className="font-poppins text-3xl italic font-medium" >Agora BlockChain gurantees :<br/></a>
+        <p className=" font-poppins text-xl font-normal mt-3">
+          <a>1. Transperency</a><br/>
+          <a>2. Decentralised Governance</a><br/>
+          <a>3. Verifiable Results</a><br/>
+        </p>
+        </p>
+    </motion.div>
+  )}
+</AnimatePresence>
 
-          <motion.div className="flex w-full h-[66px] mt-[140px] sm:mt-[180px] md:mt-[200px] justify-center md:justify-end items-center "  >
+          </div>
+          </div>
+         
+
+          <motion.div className=" flex w-full h-[66px] mt-[100px] sm:mt-[180px] md:mt-[200px] justify-center md:justify-end items-center "  >
               {/*subContainer*/}
               <div className="flex flex-row pb-20 md:pr-[100px] lg:pr-[156px]" >
-                 <NoBorderButton onClick={scrollToSection} label={"Learn more"} className={""} />
+                 <NoBorderButton onClick={hoveringDiv} label={"Learn more"} className={""} />
                  <BorderButton onClick={()=>window.location.href = CLIENT_LINKS.APP_ROOT} label={"Get Started >"} className={" md:hover:scale-[1.1] md:duration-75 md:transition-all"} />
               </div>
          
