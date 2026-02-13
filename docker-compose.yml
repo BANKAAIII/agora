@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   blockchain:
@@ -31,6 +31,24 @@ services:
       - ./client:/app/client
       - /app/client/node_modules
 
+
+  frontend2:
+    build:
+      context: ./client2
+      dockerfile: Dockerfile
+    env_file:
+      - ./client2/.env
+    ports:
+      - "3001:3000"
+    depends_on:
+      - blockchain
+    networks:
+      - agora-network
+    volumes:
+      - ./client2:/app/client2
+      - /app/client2/node_modules
+
 networks:
   agora-network:
     driver: bridge
+

@@ -3,21 +3,18 @@ import React from 'react'
 import { walletCardInterface } from '../utils/walletCardInterface'
 import Image from 'next/image'
 
-const wallets = [{
-    name:"Phantom" , walletColor:"bg-[##ab9ff2]"
-},
-{
-    name: "CoinBase" , walletColor:""
-}
-]
 
-const Walletbutton = ({walletColor , name , onClick} :walletCardInterface) => {
-  return <div className='w-[275px] h-[90px] rounded-full bg-[#fff6cc] flex flex-row items-center justify-center'>
+const Walletbutton = ({ name , onClick} :walletCardInterface) => {
+    let walletcolor = ""
+    name === "phantom"? walletcolor = "bg-[#ab9ff2]" : name === "metaMask"? walletcolor = "bg-[#F48700]" : name === "CoinBase"? walletcolor= "bg-[#004FF6]": name === "walletConnect"? walletcolor="bg-[#419CFC]" : walletcolor= "null"
+
+  return <div className='w-[275px] h-[90px] rounded-full bg-[#fff6cc] flex flex-row items-center justify-center gap-4 m-2'>
         {/* wallet color */}
-        <div className={`w-[22px] h-[22px] rounded-full ${walletColor}`} ></div>  
-        <a className="font-poppins text-[22px] font-medium italic pl-[11px] pr-[68px]" >{name}</a>      
-        <button onClick={()=>{}} >
-            <Image src={"/cross.png"} alt={"loading"} className="w-[20px] h-[20px]" />
+        <div className={`w-[22px] h-[22px] rounded-full ${walletcolor}`} ></div>  
+        <a className="font-poppins text-[22px] font-medium italic " >{name}</a>      
+        <button
+         onClick={()=>{}} >
+            <Image width={80} height={80} src={"/cross.png"} alt={"loading"} className="w-[20px] h-[20px] hover:scale-[1.1]" />
         </button>
     </div>
 }

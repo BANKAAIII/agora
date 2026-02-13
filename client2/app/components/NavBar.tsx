@@ -9,7 +9,7 @@ import { Toggle } from "./toggle"// <-- shadcn toggle
 import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
-const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBarInterface) => {
+const NavBar = ({ className, open, setOpen }: navBarInterface) => {
   const { toggleTheme } = useTheme();
 
     
@@ -60,7 +60,7 @@ const NavBar = ({ className, onClick1, onClick2, open, setOpen,pathName }: navBa
           onClick={() => setOpen(!open)}
         >
           <Image
-          width={20} height={20}
+          width={60} height={60}
             src={"/wallet.png"}
             alt="wallet"
             className=" w-[25px] md:h-[25px] md:w-[25px] xl:h-[36px] xl:w-[36px]"

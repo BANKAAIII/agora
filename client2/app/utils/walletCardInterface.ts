@@ -1,5 +1,5 @@
 export interface walletCardInterface{
-    walletColor:string;
+    walletColor?:string;
     name:string;
     onClick:any;
 }
