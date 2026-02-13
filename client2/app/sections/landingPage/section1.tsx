@@ -94,7 +94,7 @@ useEffect(() => {
 
   return <div  className="relative z-10 bg-[#ffffff] dark:bg-[#2C2C2C] flex flex-col w-full min-h-screen ">      
           
-          <NavBar className={"mt-[24px]"} open={open} setOpen={setOpen} />
+          <NavBar className={"mt-[24px]"} button2Img='' open={open} setOpen={setOpen} />
 
           <AnimatePresence>
            {
