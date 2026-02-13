@@ -12,7 +12,6 @@ import { AnimatePresence } from 'framer-motion';
 import { useTheme } from '../themeProvider';
 import {Toggle} from '../components/toggle';
 import { useRouter } from 'next/navigation';
-import MinimalNavBar from '../components/minimalNavBar';
 import DynamicInput from '../components/dynamicInput';
 import { payload1Interface } from '../utils/createElectionsPayload';
 import DatePicker from 'react-datepicker';
